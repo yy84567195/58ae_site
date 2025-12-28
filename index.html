@@ -14,6 +14,12 @@
         .nav-card:active { transform: scale(0.95); background: #f8fafc; }
         .icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 1.2rem; }
         .badge-ai { background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 800; }
+        /* 搜索话筒变红闪烁 */
+.mic-active { color: #ef4444 !important; animation: micPulse 1s infinite; }
+@keyframes micPulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+/* 商机提示文字渐变 */
+#business-ticker { transition: all 0.5s ease; }
     </style>
 </head>
 <body class="pb-20">
@@ -47,8 +53,7 @@
             <input type="text" id="searchInput" placeholder="Search factory, jobs, home in your language..." 
                 class="w-full bg-slate-100 border-none rounded-2xl py-4 pl-12 pr-12 text-sm font-medium outline-none focus:ring-2 ring-blue-500 transition-all">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <i class="fa-solid fa-microphone absolute right-4 top-1/2 -translate-y-1/2 text-blue-500"></i>
-        </div>
+            <i id="searchMic" onclick="toggleSearchVoice()" class="fa-solid fa-microphone absolute right-4 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer p-2"></i>
         
         <div class="flex gap-6 overflow-x-auto no-scrollbar whitespace-nowrap text-[10px] font-bold text-slate-500 uppercase">
             <span class="flex items-center gap-1"><i class="fa-solid fa-gas-pump text-orange-400"></i> FUEL: AED 3.12</span>
@@ -78,8 +83,10 @@
         <section>
             <div class="flex justify-between items-end mb-4 px-1">
                 <h2 class="text-sm font-black text-amber-600 uppercase tracking-widest" data-key="sec_business">Business & Trade</h2>
-                <span class="text-[10px] font-bold text-slate-400">GROW YOUR WEALTH</span>
-            </div>
+                <div class="flex flex-col items-end">
+    <span id="business-ticker" class="text-[9px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full mb-1">🔥 HOT: Factory Deals</span>
+    <span class="text-[10px] font-bold text-slate-400">GROW YOUR WEALTH</span>
+</div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                 <div onclick="window.location.href='list.html'" class="nav-card p-4 border-amber-200 ring-2 ring-amber-50 shadow-lg cursor-pointer">
     <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
@@ -161,7 +168,50 @@
                 if (data[key]) el.innerText = data[key];
             });
             document.getElementById('searchInput').placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
-        }
+        }// 1. 语音搜索功能
+// 修复版：支持中文并优化识别成功率
+function toggleSearchVoice() {
+    // 兼容不同浏览器的语音接口
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        alert("Your browser does not support voice input. (浏览器不支持语音输入)");
+        return;
+    }
+
+    const mic = document.getElementById('searchMic');
+    const input = document.getElementById('searchInput');
+    const recognition = new SpeechRecognition();
+
+    // ✅ 关键改动：将识别语言设为中文 (也可设为 'en-US')
+    recognition.lang = 'zh-CN'; 
+    recognition.interimResults = false; // 最终结果出来再填入，防止乱跳
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+        mic.classList.add('mic-active');
+        input.placeholder = "Listening... (正在听...)"; // 视觉提示
+    };
+
+    recognition.onend = () => {
+        mic.classList.remove('mic-active');
+        input.placeholder = "Search factory, jobs, home..."; // 恢复提示
+    };
+
+    recognition.onresult = (event) => {
+        // ✅ 获取识别到的文字并填入
+        const transcript = event.results[0][0].transcript;
+        input.value = transcript;
+        console.log("Recognition result:", transcript);
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Speech error:", event.error);
+        mic.classList.remove('mic-active');
+    };
+
+    recognition.start();
+}
     </script>
 </body>
 </html>
