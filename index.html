@@ -84,8 +84,8 @@
             <div class="flex justify-between items-end mb-4 px-1">
                 <h2 class="text-sm font-black text-amber-600 uppercase tracking-widest" data-key="sec_business">Business & Trade</h2>
                 <div class="flex flex-col items-end">
-    <span id="business-ticker" class="text-[9px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full mb-1">🔥 HOT: Factory Deals</span>
-    <span class="text-[10px] font-bold text-slate-400">GROW YOUR WEALTH</span>
+    <span id="business-ticker" class="text-[9px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full block text-right mb-1 w-fit ml-auto">🔥 HOT: Factory Deals</span>
+<span class="text-[10px] font-bold text-slate-400 block text-right">GROW YOUR WEALTH</span>
 </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                 <div onclick="window.location.href='list.html'" class="nav-card p-4 border-amber-200 ring-2 ring-amber-50 shadow-lg cursor-pointer">
@@ -170,48 +170,30 @@
             document.getElementById('searchInput').placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
         }// 1. 语音搜索功能
 // 修复版：支持中文并优化识别成功率
+// 语音搜索：支持中文识别
 function toggleSearchVoice() {
-    // 兼容不同浏览器的语音接口
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-        alert("Your browser does not support voice input. (浏览器不支持语音输入)");
-        return;
-    }
-
+    if (!SpeechRecognition) return alert("Not supported");
     const mic = document.getElementById('searchMic');
     const input = document.getElementById('searchInput');
     const recognition = new SpeechRecognition();
-
-    // ✅ 关键改动：将识别语言设为中文 (也可设为 'en-US')
-    recognition.lang = 'zh-CN'; 
-    recognition.interimResults = false; // 最终结果出来再填入，防止乱跳
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-        mic.classList.add('mic-active');
-        input.placeholder = "Listening... (正在听...)"; // 视觉提示
-    };
-
-    recognition.onend = () => {
-        mic.classList.remove('mic-active');
-        input.placeholder = "Search factory, jobs, home..."; // 恢复提示
-    };
-
-    recognition.onresult = (event) => {
-        // ✅ 获取识别到的文字并填入
-        const transcript = event.results[0][0].transcript;
-        input.value = transcript;
-        console.log("Recognition result:", transcript);
-    };
-
-    recognition.onerror = (event) => {
-        console.error("Speech error:", event.error);
-        mic.classList.remove('mic-active');
-    };
-
+    recognition.lang = 'zh-CN'; // 设为中文，解决“说话没反应”的问题
+    recognition.onstart = () => { mic.style.color = 'red'; input.placeholder = "Listening..."; };
+    recognition.onend = () => { mic.style.color = '#3b82f6'; input.placeholder = "Search..."; };
+    recognition.onresult = (e) => { input.value = e.results[0][0].transcript; };
     recognition.start();
 }
+
+// 自动换词：Business 旁边的文字每 3 秒变一次
+const tickerWords = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67", "🏗️ BIZ: New Licenses"];
+let wordIdx = 0;
+setInterval(() => {
+    const el = document.getElementById('business-ticker');
+    if (el) {
+        wordIdx = (wordIdx + 1) % tickerWords.length;
+        el.innerText = tickerWords[wordIdx];
+    }
+}, 3000);
     </script>
 </body>
 </html>
