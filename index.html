@@ -10,6 +10,8 @@
     <style> * { touch-action: manipulation; } </style>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
@@ -144,7 +146,10 @@
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-user text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">My 58</span></div>
     </footer>
 
-    <script>
+   <script>
+        // ==========================================
+        // 1. 语言包数据
+        // ==========================================
         const langData = {
             zh: {
                 sec_living: "生活与房产", property: "房产租售", motors: "二手汽车", market: "闲置市场", services: "生活服务", logistics: "物流搬家", health: "医疗教育",
@@ -160,6 +165,9 @@
             }
         };
 
+        // ==========================================
+        // 2. 基础功能：切换语言 & 语音 & 跑马灯
+        // ==========================================
         function changeLang(lang) {
             document.documentElement.dir = (lang === 'ar' || lang === 'fa' || lang === 'ur') ? 'rtl' : 'ltr';
             const data = langData[lang] || langData['en'];
@@ -167,26 +175,42 @@
                 const key = el.getAttribute('data-key');
                 if (data[key]) el.innerText = data[key];
             });
-            document.getElementById('searchInput').placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
+            }
         }
 
-        // 语音搜索：支持中文识别
         function toggleSearchVoice() {
+            // 兼容性处理
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return alert("Speech recognition not supported");
+            if (!SpeechRecognition) {
+                alert("Speech recognition not supported in this browser.");
+                return;
+            }
             
             const mic = document.getElementById('searchMic');
             const input = document.getElementById('searchInput');
             const recognition = new SpeechRecognition();
             
+            // 设为中文识别 (也可改为动态)
             recognition.lang = 'zh-CN'; 
-            recognition.onstart = () => { mic.classList.add('mic-active'); input.placeholder = "Listening..."; };
-            recognition.onend = () => { mic.classList.remove('mic-active'); input.placeholder = "Search..."; };
-            recognition.onresult = (e) => { input.value = e.results[0][0].transcript; };
+            
+            recognition.onstart = () => { 
+                if(mic) mic.classList.add('mic-active'); 
+                if(input) input.placeholder = "Listening... (请说话)"; 
+            };
+            recognition.onend = () => { 
+                if(mic) mic.classList.remove('mic-active'); 
+                if(input) input.placeholder = "Search..."; 
+            };
+            recognition.onresult = (e) => { 
+                if(input) input.value = e.results[0][0].transcript; 
+            };
             recognition.start();
         }
 
-        // 自动换词逻辑
+        // Business 动态商机提示
         const tickerWords = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67", "🏗️ BIZ: New Licenses"];
         let wordIdx = 0;
         setInterval(() => {
@@ -196,27 +220,84 @@
                 el.innerText = tickerWords[wordIdx];
             }
         }, 3000);
-            // ✅ 智能环境匹配：自动识别 13 种母语
-    function autoDetectLanguage() {
-        // 获取用户浏览器的语言 (比如 zh-CN 或 ar-AE)
-        const userLang = navigator.language || navigator.userLanguage; 
-        const langCode = userLang.split('-')[0].toLowerCase(); // 提取前两位，如 zh, ar, en
-        
-        // 如果我们支持这个语言，且用户还没手动切换过，就自动切换
-        const supportLangs = Object.keys(langData); // 获取我们支持的所有语言列表
-        // 注意：这里需要确保 langData 里有对应的 key
-        
-        // 简单逻辑：如果 langData 里有这个语言代码，就切过去
-        // (为了不干扰你现在的测试，这里加个简单的判断)
-        if (langCode !== 'en' && document.querySelector(`option[value="${langCode}"]`)) {
-             document.getElementById('langSwitcher').value = langCode;
-             changeLang(langCode);
-        }
-    }
-    
-    // 页面加载完立刻执行自动识别
-    window.addEventListener('DOMContentLoaded', autoDetectLanguage);
 
+        // ==========================================
+        // 3. 智能环境匹配：自动识别 13 种母语
+        // ==========================================
+        function autoDetectLanguage() {
+            const userLang = navigator.language || navigator.userLanguage; 
+            const langCode = userLang.split('-')[0].toLowerCase(); 
+            
+            const langSwitcher = document.getElementById('langSwitcher');
+            if (langCode !== 'en' && langSwitcher && langSwitcher.querySelector(`option[value="${langCode}"]`)) {
+                 langSwitcher.value = langCode;
+                 changeLang(langCode);
+            }
+        }
+
+        // ==========================================
+        // 4. 核心引擎：数据库读取 + 跳转详情页
+        // ==========================================
+        const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
+        const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
+
+        async function loadPosts() {
+            // 安全检查：防止头部没加库导致报错
+            if (typeof supabase === 'undefined') {
+                console.warn("Supabase script missing via CDN. Skipping DB load.");
+                return;
+            }
+            
+            const client = supabase.createClient(SB_URL, SB_KEY);
+            
+            // 从数据库拿最新的 6 条帖子
+            const { data, error } = await client
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(6);
+
+            if (error || !data || data.length === 0) return;
+
+            // 定位到 "Business & Trade" 区域
+            const businessHeader = document.querySelector('[data-key="sec_business"]');
+            if (!businessHeader) return;
+            
+            const gridContainer = businessHeader.parentElement.nextElementSibling;
+            
+            if (gridContainer) {
+                const cardsHTML = data.map(post => {
+                    const imgUrl = post.image_url || 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=800&q=80';
+                    
+                    // ✅ 点击跳转 details.html 并携带 ID
+                    return `
+                    <div onclick="window.location.href='details.html?id=${post.id}'" class="nav-card p-3 border border-amber-200 shadow-md flex gap-3 h-24 active:scale-95 transition-transform cursor-pointer bg-white overflow-hidden relative group">
+                        <div class="w-20 h-full bg-slate-100 rounded-lg overflow-hidden shrink-0">
+                            <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="flex-1 flex flex-col justify-between py-1">
+                            <div>
+                                <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md mb-1 inline-block">${post.category || 'New'}</span>
+                                <h3 class="text-xs font-bold text-slate-800 leading-tight line-clamp-2">${post.title || 'Untitled Post'}</h3>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <span class="text-[9px] font-bold text-slate-400">刚刚发布</span>
+                                <span class="text-[9px] font-extrabold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">CHECK ></span>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                gridContainer.insertAdjacentHTML('afterbegin', cardsHTML);
+            }
+        }
+
+        // 统一启动入口
+        window.addEventListener('DOMContentLoaded', () => {
+            autoDetectLanguage();
+            loadPosts();
+        });
     </script>
 </body>
 </html>

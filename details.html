@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ad Details | 58.ae</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; touch-action: manipulation; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* AI 翻译微光动画 */
+        .ai-translating { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #f0f9ff 4%, #e0f2fe 25%, #f0f9ff 36%); background-size: 1000px 100%; }
+        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+    </style>
+</head>
+<body class="pb-24">
+
+    <nav class="fixed top-0 w-full z-50 flex justify-between items-center px-4 py-4 bg-gradient-to-b from-black/50 to-transparent pointer-events-none">
+        <a href="index.html" class="pointer-events-auto w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white active:scale-90 transition">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <div class="pointer-events-auto flex gap-3">
+            <button class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white"><i class="fa-regular fa-heart"></i></button>
+            <button class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-share-nodes"></i></button>
+        </div>
+    </nav>
+
+    <div id="img-container" class="w-full h-80 bg-slate-200 relative">
+        <img id="post-img" class="w-full h-full object-cover" src="" alt="Loading...">
+        <div class="absolute bottom-4 left-4 bg-black/60 text-white text-xs px-2 py-1 rounded-md">
+            <i class="fa-solid fa-camera mr-1"></i> 1/1
+        </div>
+    </div>
+
+    <main class="px-5 -mt-6 relative z-10 bg-[#f8fafc] rounded-t-[2rem] min-h-[50vh] pt-8 space-y-6">
+        
+        <div>
+            <div class="flex justify-between items-start">
+                <span id="post-cat" class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-wide">Category</span>
+                <span id="post-date" class="text-[10px] text-slate-400 font-bold">...</span>
+            </div>
+            <h1 id="post-title" class="text-xl font-black text-slate-900 mt-2 leading-tight">Loading Title...</h1>
+            <div class="mt-3 text-2xl font-black text-emerald-600" id="post-price">AED ...</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm active:scale-[0.98] transition-transform" onclick="toggleTranslation()">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-purple-600 text-lg"></i>
+                    <span id="trans-btn-text" class="text-xs font-black text-slate-900 uppercase">AI Translate</span>
+                </div>
+                <div id="trans-toggle" class="w-10 h-5 bg-slate-200 rounded-full relative transition-colors duration-300">
+                    <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full shadow transition-transform duration-300"></div>
+                </div>
+            </div>
+            <p id="ai-status" class="text-[10px] text-slate-400">View original description</p>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-slate-900">Description</h2>
+            <p id="post-desc" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">Loading details from database...</p>
+        </div>
+
+        <div class="flex items-center gap-3 py-4 border-t border-slate-200 mt-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-slate-900">Verified User</h3>
+                <div class="flex items-center gap-1 text-[10px] text-slate-400">
+                    <i class="fa-solid fa-check-circle text-blue-500"></i>
+                    <span>ID Verified · Joined 2025</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="fixed bottom-0 w-full bg-white border-t border-slate-100 px-6 py-4 flex items-center gap-4 z-50 pb-safe">
+        <button class="flex flex-col items-center text-slate-400 gap-1 active:scale-90 transition">
+            <i class="fa-regular fa-message text-xl"></i>
+            <span class="text-[9px] font-bold">SMS</span>
+        </button>
+        <button onclick="startChat()" class="flex-1 bg-slate-900 text-white py-3 rounded-xl font-bold shadow-xl shadow-slate-200 active:scale-95 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-comments"></i>
+            <span>Chat with Seller</span>
+        </button>
+    </div>
+
+    <script>
+        // 1. 初始化数据库
+        const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
+        const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
+        const sbClient = supabase.createClient(SB_URL, SB_KEY);
+
+        // 2. 获取 URL 中的 ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+
+        // ✅ 3. 定义 13 种语言映射 (核心：自动匹配用户母语)
+        const langMap = {
+            'zh': 'Chinese (中文)',
+            'en': 'English',
+            'ar': 'Arabic (العربية)',
+            'ru': 'Russian (Русский)',
+            'hi': 'Hindi (हिन्दी)',
+            'ur': 'Urdu (اردو)',
+            'tl': 'Filipino (Tagalog)',
+            'fr': 'French (Français)',
+            'fa': 'Persian (فارسی)',
+            'bn': 'Bengali (বাংলা)',
+            'ml': 'Malayalam (മലയാളം)',
+            'de': 'German (Deutsch)',
+            'es': 'Spanish (Español)'
+        };
+
+        // 自动检测用户手机语言
+        let targetLangName = "English"; // 默认
+        let userLangCode = (navigator.language || navigator.userLanguage).split('-')[0].toLowerCase();
+        if (langMap[userLangCode]) {
+            targetLangName = langMap[userLangCode];
+        }
+
+        // 初始化页面时更新按钮文字
+        document.getElementById('trans-btn-text').innerText = `Translate to ${targetLangName}`;
+
+        // 4. 加载数据
+        async function loadDetails() {
+            if (!postId) {
+                document.getElementById('post-title').innerText = "Post not found";
+                return;
+            }
+
+            const { data, error } = await sbClient
+                .from('posts')
+                .select('*')
+                .eq('id', postId)
+                .single();
+
+            if (error || !data) {
+                alert("Error loading post!");
+                return;
+            }
+
+            document.getElementById('post-title').innerText = data.title || "No Title";
+            document.getElementById('post-desc').innerText = data.description || "No description provided.";
+            document.getElementById('post-cat').innerText = data.category || "General";
+            document.getElementById('post-date').innerText = new Date(data.created_at).toLocaleDateString();
+            
+            const imgEl = document.getElementById('post-img');
+            imgEl.src = data.image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=800';
+
+            const priceMatch = (data.description || "").match(/\d+/);
+            const price = priceMatch ? priceMatch[0] : null;
+            document.getElementById('post-price').innerText = price ? `AED ${price}` : "Contact for Price";
+        }
+
+        // 5. AI 翻译逻辑 (动态匹配语言)
+        let isTranslated = false;
+        let originalText = "";
+        
+        function toggleTranslation() {
+            const descEl = document.getElementById('post-desc');
+            const toggleBtn = document.getElementById('trans-toggle');
+            const statusEl = document.getElementById('ai-status');
+            const dot = toggleBtn.querySelector('div');
+
+            if (!originalText) originalText = descEl.innerText;
+
+            if (!isTranslated) {
+                // 开启翻译
+                descEl.classList.add('ai-translating'); 
+                statusEl.innerText = `AI is translating to ${targetLangName}...`;
+                
+                setTimeout(() => {
+                    descEl.classList.remove('ai-translating');
+                    // ✅ 模拟翻译：这里显示"已翻译成目标语言"
+                    descEl.innerText = `[AI Translated to ${targetLangName}]: \n` + originalText + "\n\n(Context-aware translation powered by 58.ae AI)";
+                    
+                    // UI 变化
+                    toggleBtn.classList.replace('bg-slate-200', 'bg-purple-600');
+                    dot.classList.add('translate-x-5');
+                    statusEl.innerText = `Translated into ${targetLangName}`;
+                    isTranslated = true;
+                }, 800);
+            } else {
+                // 还原
+                descEl.innerText = originalText;
+                toggleBtn.classList.replace('bg-purple-600', 'bg-slate-200');
+                dot.classList.remove('translate-x-5');
+                statusEl.innerText = "View original description";
+                isTranslated = false;
+            }
+        }
+
+        function startChat() {
+             alert("Next step: Open in-app AI Chat!");
+        }
+
+        window.onload = loadDetails;
+    </script>
+</body>
+</html>
