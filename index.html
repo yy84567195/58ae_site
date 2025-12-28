@@ -14,13 +14,6 @@
         .nav-card:active { transform: scale(0.95); background: #f8fafc; }
         .icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 1.2rem; }
         .badge-ai { background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 800; }
-        
-        /* 新增：话筒闪烁动画 */
-        .mic-active { color: #ef4444 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        
-        /* 新增：商机提示渐显动画 */
-        #business-ticker { transition: all 0.5s ease; }
     </style>
 </head>
 <body class="pb-20">
@@ -35,7 +28,17 @@
                 <option value="en">ENGLISH</option>
                 <option value="zh">中文 (CHINESE)</option>
                 <option value="ar">العربية (ARABIC)</option>
-                </select>
+                <option value="ru">РУССКИЙ (RUSSIAN)</option>
+                <option value="hi">हिन्दी (HINDI)</option>
+                <option value="ur">اردو (URDU)</option>
+                <option value="tl">TAGALOG (FILIPINO)</option>
+                <option value="fr">FRANÇAIS</option>
+                <option value="fa">فارسی</option>
+                <option value="bn">বাংলা</option>
+                <option value="ml">മലയാളം</option>
+                <option value="de">DEUTSCH</option>
+                <option value="es">ESPAÑOL</option>
+            </select>
         </div>
     </nav>
 
@@ -44,8 +47,7 @@
             <input type="text" id="searchInput" placeholder="Search factory, jobs, home in your language..." 
                 class="w-full bg-slate-100 border-none rounded-2xl py-4 pl-12 pr-12 text-sm font-medium outline-none focus:ring-2 ring-blue-500 transition-all">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            
-            <i id="searchMic" onclick="toggleSearchVoice()" class="fa-solid fa-microphone absolute right-4 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer p-2"></i>
+            <i class="fa-solid fa-microphone absolute right-4 top-1/2 -translate-y-1/2 text-blue-500"></i>
         </div>
         
         <div class="flex gap-6 overflow-x-auto no-scrollbar whitespace-nowrap text-[10px] font-bold text-slate-500 uppercase">
@@ -76,16 +78,14 @@
         <section>
             <div class="flex justify-between items-end mb-4 px-1">
                 <h2 class="text-sm font-black text-amber-600 uppercase tracking-widest" data-key="sec_business">Business & Trade</h2>
-                <div class="flex flex-col items-end">
-                    <span id="business-ticker" class="text-[9px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full mb-1">🔥 HOT: Factory Deals</span>
-                    <span class="text-[10px] font-bold text-slate-400">GROW YOUR WEALTH</span>
-                </div>
+                <span class="text-[10px] font-bold text-slate-400">GROW YOUR WEALTH</span>
             </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                 <div onclick="window.location.href='list.html'" class="nav-card p-4 border-amber-200 ring-2 ring-amber-50 shadow-lg cursor-pointer">
-                    <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
-                    <span class="text-[10px] font-bold" data-key="factory">Factory Direct</span>
-                </div>
+    <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
+    <span class="text-[10px] font-bold" data-key="factory">Factory Direct</span>
+</div>
+
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-handshake"></i></div><span class="text-[10px] font-bold" data-key="broker">Opportunities</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-shop"></i></div><span class="text-[10px] font-bold" data-key="micro">Micro Biz</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-boxes-stacked"></i></div><span class="text-[10px] font-bold" data-key="sourcing">Sourcing</span></div>
@@ -126,53 +126,31 @@
     <footer class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t px-6 py-2 flex justify-between items-center max-w-6xl mx-auto shadow-2xl">
         <div class="flex flex-col items-center text-blue-600"><i class="fa-solid fa-house text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Home</span></div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-message text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Chat</span></div>
-        <div class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl cursor-pointer" onclick="window.location.href='post.html'">
-            <i class="fa-solid fa-plus text-xl"></i>
+        <div class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl">
+            <div onclick="window.location.href='post.html'" class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl cursor-pointer">
+    <i class="fa-solid fa-plus text-xl"></i>
+</div>
+
         </div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-compass text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Explore</span></div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-user text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">My 58</span></div>
     </footer>
 
     <script>
-        // 1. 语音搜索逻辑
-        let recognition;
-        function toggleSearchVoice() {
-            if (!('webkitSpeechRecognition' in window)) {
-                alert("Speech recognition not supported.");
-                return;
-            }
-            const mic = document.getElementById('searchMic');
-            const input = document.getElementById('searchInput');
-            
-            recognition = new webkitSpeechRecognition();
-            recognition.lang = 'en-US'; // 也可以设为 'zh-CN'
-            
-            recognition.onstart = () => mic.classList.add('mic-active');
-            recognition.onend = () => mic.classList.remove('mic-active');
-            recognition.onresult = (event) => {
-                input.value = event.results[0][0].transcript;
-                // 自动触发搜索逻辑可以在这里加
-            };
-            recognition.start();
-        }
-
-        // 2. Business 动态价格/商机提示逻辑
-        const tips = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67", "🏗️ BIZ: New Licenses", "💎 VIP: OTC Map Live"];
-        let tipIndex = 0;
-        setInterval(() => {
-            const ticker = document.getElementById('business-ticker');
-            tipIndex = (tipIndex + 1) % tips.length;
-            ticker.style.opacity = 0;
-            setTimeout(() => {
-                ticker.innerText = tips[tipIndex];
-                ticker.style.opacity = 1;
-            }, 500);
-        }, 3000);
-
-        // 原有的语言逻辑 (保持不变)
         const langData = {
-            zh: { sec_living: "生活与房产", property: "房产租售", motors: "二手汽车", market: "闲置市场", factory: "工厂直供" },
-            en: { sec_living: "Living", property: "Property", motors: "Motors", market: "Market", factory: "Factory Direct" }
+            zh: {
+                sec_living: "生活与房产", property: "房产租售", motors: "二手汽车", market: "闲置市场", services: "生活服务", logistics: "物流搬家", health: "医疗教育",
+                sec_business: "商业与贸易", factory: "工厂直供", broker: "资源/掮客", micro: "小本生意", sourcing: "全球找货", invest: "投资机会", legal: "法律/会计",
+                sec_career: "招聘与进阶", jobs: "找工作", talents: "招人才", visa: "签证代办", setup: "执照注册", banking: "银行开户", wiki: "旅居百科",
+                sec_tech: "高新科技", otc: "OTC地图", web3: "Web3职位", ai: "AI/算力租赁"
+            },
+            en: {
+                sec_living: "Living", property: "Property", motors: "Motors", market: "Market", services: "Services", logistics: "Logistics", health: "Health",
+                sec_business: "Business & Trade", factory: "Factory Direct", broker: "Opportunities", micro: "Micro Biz", sourcing: "Sourcing", invest: "Investment", legal: "Legal/Tax",
+                sec_career: "Jobs & Growth", jobs: "Find Jobs", talents: "Hire Talents", visa: "Visa/PRO", setup: "Setup", banking: "Banking", wiki: "UAE Wiki",
+                sec_tech: "Tech & Web3", otc: "OTC Map", web3: "Web3 Ops", ai: "AI/Compute"
+            }
+            // 更多语言可在后台接入大模型 API 自动生成...
         };
 
         function changeLang(lang) {
@@ -182,6 +160,7 @@
                 const key = el.getAttribute('data-key');
                 if (data[key]) el.innerText = data[key];
             });
+            document.getElementById('searchInput').placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
         }
     </script>
 </body>
