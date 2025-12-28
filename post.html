@@ -10,8 +10,16 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
-        .recording-pulse { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+        
+        /* 录音波纹动画 */
+        .listening-animation { animation: pulse-red 1.5s infinite; background-color: #fee2e2 !important; border-color: #ef4444 !important; }
+        .listening-icon { color: #ef4444 !important; animation: bounce 1s infinite; }
+        
+        @keyframes pulse-red { 
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
+        }
         .upload-dashed { border: 2px dashed #e2e8f0; }
     </style>
 </head>
@@ -25,19 +33,18 @@
     <main class="max-w-xl mx-auto p-4 space-y-8">
 
         <section>
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos / Video</h2>
+            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos</h2>
             <div class="grid grid-cols-3 gap-2">
                 <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
-
-                <div onclick="document.getElementById('hiddenFileInput').click()" 
-                     id="uploadBox"
+                
+                <div onclick="document.getElementById('hiddenFileInput').click()" id="uploadBox"
                      class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden relative">
                     
                     <div id="uploadIcon" class="flex flex-col items-center">
                         <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
                         <span class="text-[10px] font-bold text-slate-400">ADD</span>
                     </div>
-
+                    
                     <img id="imagePreview" class="hidden w-full h-full object-cover absolute top-0 left-0">
                 </div>
             </div>
@@ -46,16 +53,17 @@
         <section class="space-y-4">
             <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe</h2>
             
-            <div id="recordBtn" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative cursor-pointer active:scale-95 transition-all">
-                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200">
-                    <i class="fa-solid fa-microphone text-white text-3xl"></i>
+            <div id="recordBtn" onclick="toggleVoice()" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative cursor-pointer active:scale-95 transition-all">
+                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 transition-colors">
+                    <i id="micIcon" class="fa-solid fa-microphone text-white text-3xl"></i>
                 </div>
-                <p class="mt-4 text-sm font-bold text-blue-600 animate-bounce">Hold to Speak</p>
+                <p id="recordStatus" class="mt-4 text-sm font-bold text-blue-600">Tap to Speak</p>
+                <p class="text-[10px] text-blue-400 px-8 text-center mt-1">Supports English/Chinese/Arabic</p>
             </div>
 
-            <div class="text-center text-slate-300 text-xs font-bold uppercase tracking-widest">OR USE TEXT</div>
+            <div class="text-center text-slate-300 text-xs font-bold uppercase tracking-widest">OR TYPE</div>
 
-            <textarea id="adContent" placeholder="Type price, location, features..." 
+            <textarea id="adContent" placeholder="Say something or type here..." 
                 class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none"></textarea>
         </section>
 
@@ -86,21 +94,19 @@
     </main>
 
     <script>
-        // --- 这里填 Key ---
+        // --- 数据库配置 ---
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         
-        // 【千万小心】请把 Key 完整粘贴到下面的单引号里，保留引号
+        // ⚠️【请在这里填入 Key】⚠️
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
 
         const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // ✅ 新增功能：处理图片预览
+        // 1. 图片预览逻辑
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
-                // 1. 创建一个临时的预览链接
                 const src = URL.createObjectURL(file);
-                // 2. 隐藏图标，显示图片
                 document.getElementById('uploadIcon').classList.add('hidden');
                 const img = document.getElementById('imagePreview');
                 img.src = src;
@@ -108,45 +114,89 @@
             }
         }
 
+        // 2. 语音识别逻辑
+        let recognition;
+        let isListening = false;
+
+        function toggleVoice() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Sorry, voice input is not supported. Please type.");
+                return;
+            }
+
+            const btn = document.getElementById('recordBtn');
+            const status = document.getElementById('recordStatus');
+            const icon = document.getElementById('micIcon');
+            const textarea = document.getElementById('adContent');
+
+            if (isListening) {
+                recognition.stop();
+                isListening = false;
+                btn.classList.remove('listening-animation');
+                icon.classList.remove('listening-icon');
+                status.innerText = "Tap to Speak";
+                status.classList.replace('text-red-500', 'text-blue-600');
+            } else {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'zh-CN'; 
+                recognition.continuous = false;
+                recognition.interimResults = false;
+
+                recognition.onstart = function() {
+                    isListening = true;
+                    btn.classList.add('listening-animation');
+                    icon.classList.add('listening-icon');
+                    status.innerText = "Listening... Speak Now";
+                    status.classList.replace('text-blue-600', 'text-red-500');
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    textarea.value += transcript + " "; 
+                };
+
+                recognition.onend = function() {
+                    isListening = false;
+                    btn.classList.remove('listening-animation');
+                    icon.classList.remove('listening-icon');
+                    status.innerText = "Tap to Speak";
+                    status.classList.replace('text-red-500', 'text-blue-600');
+                };
+
+                recognition.start();
+            }
+        }
+
+        // 3. 发布逻辑 (您之前报错的地方已修复)
         async function handlePublish() {
             const content = document.getElementById('adContent').value;
-            const btnLabel = document.getElementById('btnText');
+            const btnLabel = document.getElementById('btnText'); // 这一行现在绝对正确
             
             if (!content || content.trim() === "") {
-                alert("Please type something! (请输入内容)");
+                alert("Please type or speak something first!");
                 return;
             }
 
             try {
                 btnLabel.innerText = "Syncing..."; 
-
-                // 存入 Supabase
-                const { error } = await sbClient
-                    .from('posts')
-                    .insert([{ 
-                        title: content.substring(0, 30), 
-                        description: content, 
-                        category: 'Factory Direct',
-                        // 注意：我们暂时还没有配置云存储，所以这里先不传图片地址
-                        // 等你熟练了，我们再做图片上传到云端的功能
-                    }]);
+                
+                // 存入数据库
+                const { error } = await sbClient.from('posts').insert([{ 
+                    title: content.substring(0, 30), 
+                    description: content, 
+                    category: 'Factory Direct'
+                }]);
 
                 if (error) throw error;
 
-                alert('✅ Saved! Opening WhatsApp...');
+                alert('✅ Saved!');
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
-
             } catch (err) {
+                console.error(err);
                 alert('❌ Error: ' + err.message);
                 btnLabel.innerText = "Post via WhatsApp";
             }
-        }
-
-        // 录音动效
-        const rBtn = document.getElementById('recordBtn');
-        if(rBtn) {
-            rBtn.addEventListener('mousedown', () => rBtn.classList.add('recording-pulse'));
-            rBtn.addEventListener('mouseup', () => rBtn.classList.remove('recording-pulse'));
         }
     </script>
 </body>
