@@ -6,7 +6,6 @@
     <title>58.ae | The UAE Multilingual Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
@@ -17,7 +16,9 @@
         .badge-ai { background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 800; }
     </style>
 </head>
-<body class="pb-24"> <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b">
+<body class="pb-20">
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b">
         <div class="flex items-center gap-2">
             <span class="text-2xl font-black italic tracking-tighter text-slate-900">58<span class="text-blue-600">.ae</span></span>
             <div class="badge-ai animate-pulse">AI ACTIVE</div>
@@ -27,7 +28,17 @@
                 <option value="en">ENGLISH</option>
                 <option value="zh">中文 (CHINESE)</option>
                 <option value="ar">العربية (ARABIC)</option>
-                </select>
+                <option value="ru">РУССКИЙ (RUSSIAN)</option>
+                <option value="hi">हिन्दी (HINDI)</option>
+                <option value="ur">اردو (URDU)</option>
+                <option value="tl">TAGALOG (FILIPINO)</option>
+                <option value="fr">FRANÇAIS</option>
+                <option value="fa">فارسی</option>
+                <option value="bn">বাংলা</option>
+                <option value="ml">മലയാളം</option>
+                <option value="de">DEUTSCH</option>
+                <option value="es">ESPAÑOL</option>
+            </select>
         </div>
     </nav>
 
@@ -43,6 +54,7 @@
             <span class="flex items-center gap-1"><i class="fa-solid fa-gas-pump text-orange-400"></i> FUEL: AED 3.12</span>
             <span class="flex items-center gap-1"><i class="fa-solid fa-money-bill-transfer text-emerald-500"></i> USD/AED: 3.6725</span>
             <span class="flex items-center gap-1"><i class="fa-brands fa-bitcoin text-orange-500"></i> BTC: $96.5K</span>
+            <span class="flex items-center gap-1"><i class="fa-solid fa-users text-blue-500"></i> 1.2k Online</span>
         </div>
     </header>
 
@@ -51,23 +63,32 @@
         <section>
             <div class="flex justify-between items-end mb-4 px-1">
                 <h2 class="text-sm font-black text-blue-600 uppercase tracking-widest" data-key="sec_living">Living</h2>
+                <span class="text-[10px] font-bold text-slate-400">EVERYDAY NEEDS</span>
             </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                 <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-building"></i></div><span class="text-[10px] font-bold" data-key="property">Property</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-car"></i></div><span class="text-[10px] font-bold" data-key="motors">Motors</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-tags"></i></div><span class="text-[10px] font-bold" data-key="market">Market</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-broom"></i></div><span class="text-[10px] font-bold" data-key="services">Services</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-truck-fast"></i></div><span class="text-[10px] font-bold" data-key="logistics">Logistics</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-hospital"></i></div><span class="text-[10px] font-bold" data-key="health">Health</span></div>
             </div>
         </section>
 
         <section>
             <div class="flex justify-between items-end mb-4 px-1">
-                <h2 class="text-sm font-black text-amber-600 uppercase tracking-widest" data-key="sec_business">Business</h2>
+                <h2 class="text-sm font-black text-amber-600 uppercase tracking-widest" data-key="sec_business">Business & Trade</h2>
+                <span class="text-[10px] font-bold text-slate-400">GROW YOUR WEALTH</span>
             </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                 <div onclick="window.location.href='list.html'" class="nav-card p-4 border-amber-200 ring-2 ring-amber-50 shadow-lg cursor-pointer">
-                    <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
-                    <span class="text-[10px] font-bold" data-key="factory">Factory Direct</span>
-                </div>
+    <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
+    <span class="text-[10px] font-bold" data-key="factory">Factory Direct</span>
+</div>
+
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-handshake"></i></div><span class="text-[10px] font-bold" data-key="broker">Opportunities</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-shop"></i></div><span class="text-[10px] font-bold" data-key="micro">Micro Biz</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-boxes-stacked"></i></div><span class="text-[10px] font-bold" data-key="sourcing">Sourcing</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-briefcase"></i></div><span class="text-[10px] font-bold" data-key="invest">Investment</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-gavel"></i></div><span class="text-[10px] font-bold" data-key="legal">Legal/Tax</span></div>
             </div>
@@ -75,114 +96,71 @@
 
         <section>
             <div class="flex justify-between items-end mb-4 px-1">
-                <h2 class="text-sm font-black text-purple-600 uppercase tracking-widest" data-key="sec_tech">Tech</h2>
+                <h2 class="text-sm font-black text-emerald-600 uppercase tracking-widest" data-key="sec_career">Jobs & Growth</h2>
+                <span class="text-[10px] font-bold text-slate-400">YOUR NEXT STEP</span>
             </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <div class="nav-card p-4 ring-2 ring-emerald-50"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-user-tie"></i></div><span class="text-[10px] font-bold" data-key="jobs">Find Jobs</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-users-viewfinder"></i></div><span class="text-[10px] font-bold" data-key="talents">Hire Talents</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-passport"></i></div><span class="text-[10px] font-bold" data-key="visa">Visa/PRO</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-file-contract"></i></div><span class="text-[10px] font-bold" data-key="setup">Company Setup</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-building-columns"></i></div><span class="text-[10px] font-bold" data-key="banking">Banking</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-book"></i></div><span class="text-[10px] font-bold" data-key="wiki">UAE Wiki</span></div>
+            </div>
+        </section>
+
+        <section class="pb-8">
+            <div class="flex justify-between items-end mb-4 px-1">
+                <h2 class="text-sm font-black text-purple-600 uppercase tracking-widest" data-key="sec_tech">Tech & Web3</h2>
+                <span class="text-[10px] font-bold text-slate-400">FUTURE READY</span>
+            </div>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-solid fa-map-location-dot"></i></div><span class="text-[10px] font-bold" data-key="otc">OTC Map</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-brands fa-ethereum"></i></div><span class="text-[10px] font-bold" data-key="web3">Web3 Ops</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-solid fa-microchip"></i></div><span class="text-[10px] font-bold" data-key="ai">AI/Compute</span></div>
             </div>
         </section>
 
-        <section class="border-t pt-6 mt-6">
-            <h2 class="text-lg font-extrabold text-slate-900 mb-4 px-1">Fresh Recommendations</h2>
-            
-            <div id="feed-container" class="space-y-3">
-                <div class="animate-pulse flex space-x-4 bg-white p-4 rounded-2xl">
-                    <div class="rounded-xl bg-slate-200 h-20 w-20"></div>
-                    <div class="flex-1 space-y-4 py-1">
-                        <div class="h-4 bg-slate-200 rounded w-3/4"></div>
-                        <div class="space-y-2">
-                            <div class="h-4 bg-slate-200 rounded"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
     </main>
 
-    <footer class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t px-6 py-2 flex justify-between items-center max-w-6xl mx-auto shadow-2xl z-50">
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t px-6 py-2 flex justify-between items-center max-w-6xl mx-auto shadow-2xl">
         <div class="flex flex-col items-center text-blue-600"><i class="fa-solid fa-house text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Home</span></div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-message text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Chat</span></div>
-        <div class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl cursor-pointer" onclick="window.location.href='post.html'">
-            <i class="fa-solid fa-plus text-xl"></i>
+        <div class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl">
+            <div onclick="window.location.href='post.html'" class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl cursor-pointer">
+    <i class="fa-solid fa-plus text-xl"></i>
+</div>
+
         </div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-compass text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Explore</span></div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-user text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">My 58</span></div>
     </footer>
 
     <script>
-        // ------------------------------------------
-        // 1. Supabase 数据库连接 (已填好 Key)
-        // ------------------------------------------
-        const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
-        const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
-        const sbClient = supabase.createClient(SB_URL, SB_KEY);
-
-        // ------------------------------------------
-        // 2. 加载帖子数据的逻辑
-        // ------------------------------------------
-        async function loadPosts() {
-            const container = document.getElementById('feed-container');
-            const { data, error } = await sbClient
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(10); // 只取最新的10条
-
-            if (error || !data || data.length === 0) {
-                container.innerHTML = '<div class="text-center py-6 text-slate-400 text-sm">暂无新帖，快去发布吧！</div>';
-                return;
-            }
-
-            container.innerHTML = ''; // 清空加载动画
-
-            data.forEach(post => {
-                // 默认图片
-                const imgUrl = 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&q=80&w=200';
-                
-                // 生成卡片 HTML
-                const cardHtml = `
-                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex gap-3 h-28 active:scale-[0.98] transition-transform">
-                        <div class="w-24 h-full bg-slate-100 rounded-xl overflow-hidden shrink-0">
-                            <img src="${imgUrl}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="flex-1 flex flex-col justify-between py-1">
-                            <div>
-                                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md mb-1 inline-block">${post.category || 'General'}</span>
-                                <h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2">${post.title || 'No Title'}</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <span class="text-xs text-slate-400">${new Date(post.created_at).toLocaleDateString()}</span>
-                                <span class="text-sm font-extrabold text-slate-900">Details ></span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardHtml);
-            });
-        }
-
-        // 页面加载完成后，自动执行加载
-        window.onload = loadPosts;
-
-        // ------------------------------------------
-        // 3. 原有的语言切换逻辑 (保留)
-        // ------------------------------------------
         const langData = {
-            zh: { sec_living: "生活与房产", property: "房产租售", motors: "二手汽车", market: "闲置市场", sec_business: "商业与贸易", factory: "工厂直供" },
-            en: { sec_living: "Living", property: "Property", motors: "Motors", market: "Market", sec_business: "Business & Trade", factory: "Factory Direct" }
+            zh: {
+                sec_living: "生活与房产", property: "房产租售", motors: "二手汽车", market: "闲置市场", services: "生活服务", logistics: "物流搬家", health: "医疗教育",
+                sec_business: "商业与贸易", factory: "工厂直供", broker: "资源/掮客", micro: "小本生意", sourcing: "全球找货", invest: "投资机会", legal: "法律/会计",
+                sec_career: "招聘与进阶", jobs: "找工作", talents: "招人才", visa: "签证代办", setup: "执照注册", banking: "银行开户", wiki: "旅居百科",
+                sec_tech: "高新科技", otc: "OTC地图", web3: "Web3职位", ai: "AI/算力租赁"
+            },
+            en: {
+                sec_living: "Living", property: "Property", motors: "Motors", market: "Market", services: "Services", logistics: "Logistics", health: "Health",
+                sec_business: "Business & Trade", factory: "Factory Direct", broker: "Opportunities", micro: "Micro Biz", sourcing: "Sourcing", invest: "Investment", legal: "Legal/Tax",
+                sec_career: "Jobs & Growth", jobs: "Find Jobs", talents: "Hire Talents", visa: "Visa/PRO", setup: "Setup", banking: "Banking", wiki: "UAE Wiki",
+                sec_tech: "Tech & Web3", otc: "OTC Map", web3: "Web3 Ops", ai: "AI/Compute"
+            }
+            // 更多语言可在后台接入大模型 API 自动生成...
         };
 
         function changeLang(lang) {
-            document.documentElement.dir = (lang === 'ar' || lang === 'fa') ? 'rtl' : 'ltr';
+            document.documentElement.dir = (lang === 'ar' || lang === 'fa' || lang === 'ur') ? 'rtl' : 'ltr';
             const data = langData[lang] || langData['en'];
-            if(data) {
-                document.querySelectorAll('[data-key]').forEach(el => {
-                    const key = el.getAttribute('data-key');
-                    if (data[key]) el.innerText = data[key];
-                });
-            }
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (data[key]) el.innerText = data[key];
+            });
+            document.getElementById('searchInput').placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
         }
     </script>
 </body>
