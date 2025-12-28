@@ -14,12 +14,11 @@
         .nav-card:active { transform: scale(0.95); background: #f8fafc; }
         .icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 1.2rem; }
         .badge-ai { background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 800; }
-        /* 搜索话筒变红闪烁 */
-.mic-active { color: #ef4444 !important; animation: micPulse 1s infinite; }
-@keyframes micPulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-/* 商机提示文字渐变 */
-#business-ticker { transition: all 0.5s ease; }
+        
+        /* 语音搜索特效 */
+        .mic-active { color: #ef4444 !important; animation: micPulse 1s infinite; }
+        @keyframes micPulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        #business-ticker { transition: all 0.5s ease; }
     </style>
 </head>
 <body class="pb-20">
@@ -54,8 +53,7 @@
                 class="w-full bg-slate-100 border-none rounded-2xl py-4 pl-12 pr-12 text-sm font-medium outline-none focus:ring-2 ring-blue-500 transition-all">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <i id="searchMic" onclick="toggleSearchVoice()" class="fa-solid fa-microphone absolute right-4 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer p-2"></i>
-        
-        <div class="flex gap-6 overflow-x-auto no-scrollbar whitespace-nowrap text-[10px] font-bold text-slate-500 uppercase">
+        </div> <div class="flex gap-6 overflow-x-auto no-scrollbar whitespace-nowrap text-[10px] font-bold text-slate-500 uppercase">
             <span class="flex items-center gap-1"><i class="fa-solid fa-gas-pump text-orange-400"></i> FUEL: AED 3.12</span>
             <span class="flex items-center gap-1"><i class="fa-solid fa-money-bill-transfer text-emerald-500"></i> USD/AED: 3.6725</span>
             <span class="flex items-center gap-1"><i class="fa-brands fa-bitcoin text-orange-500"></i> BTC: $96.5K</span>
@@ -84,15 +82,14 @@
             <div class="flex justify-between items-end mb-4 px-1">
                 <h2 class="text-sm font-black text-amber-600 uppercase tracking-widest" data-key="sec_business">Business & Trade</h2>
                 <div class="flex flex-col items-end">
-    <span id="business-ticker" class="text-[9px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full block text-right mb-1 w-fit ml-auto">🔥 HOT: Factory Deals</span>
-<span class="text-[10px] font-bold text-slate-400 block text-right">GROW YOUR WEALTH</span>
-</div>
-            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                    <span id="business-ticker" class="text-[9px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full block text-right mb-1 w-fit ml-auto">🔥 HOT: Factory Deals</span>
+                    <span class="text-[10px] font-bold text-slate-400 block text-right">GROW YOUR WEALTH</span>
+                </div>
+            </div> <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                 <div onclick="window.location.href='list.html'" class="nav-card p-4 border-amber-200 ring-2 ring-amber-50 shadow-lg cursor-pointer">
-    <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
-    <span class="text-[10px] font-bold" data-key="factory">Factory Direct</span>
-</div>
-
+                    <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
+                    <span class="text-[10px] font-bold" data-key="factory">Factory Direct</span>
+                </div>
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-handshake"></i></div><span class="text-[10px] font-bold" data-key="broker">Opportunities</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-shop"></i></div><span class="text-[10px] font-bold" data-key="micro">Micro Biz</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-boxes-stacked"></i></div><span class="text-[10px] font-bold" data-key="sourcing">Sourcing</span></div>
@@ -135,9 +132,8 @@
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-message text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Chat</span></div>
         <div class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl">
             <div onclick="window.location.href='post.html'" class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl cursor-pointer">
-    <i class="fa-solid fa-plus text-xl"></i>
-</div>
-
+                <i class="fa-solid fa-plus text-xl"></i>
+            </div>
         </div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-compass text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Explore</span></div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-user text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">My 58</span></div>
@@ -157,7 +153,6 @@
                 sec_career: "Jobs & Growth", jobs: "Find Jobs", talents: "Hire Talents", visa: "Visa/PRO", setup: "Setup", banking: "Banking", wiki: "UAE Wiki",
                 sec_tech: "Tech & Web3", otc: "OTC Map", web3: "Web3 Ops", ai: "AI/Compute"
             }
-            // 更多语言可在后台接入大模型 API 自动生成...
         };
 
         function changeLang(lang) {
@@ -168,32 +163,34 @@
                 if (data[key]) el.innerText = data[key];
             });
             document.getElementById('searchInput').placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
-        }// 1. 语音搜索功能
-// 修复版：支持中文并优化识别成功率
-// 语音搜索：支持中文识别
-function toggleSearchVoice() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("Not supported");
-    const mic = document.getElementById('searchMic');
-    const input = document.getElementById('searchInput');
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'zh-CN'; // 设为中文，解决“说话没反应”的问题
-    recognition.onstart = () => { mic.style.color = 'red'; input.placeholder = "Listening..."; };
-    recognition.onend = () => { mic.style.color = '#3b82f6'; input.placeholder = "Search..."; };
-    recognition.onresult = (e) => { input.value = e.results[0][0].transcript; };
-    recognition.start();
-}
+        }
 
-// 自动换词：Business 旁边的文字每 3 秒变一次
-const tickerWords = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67", "🏗️ BIZ: New Licenses"];
-let wordIdx = 0;
-setInterval(() => {
-    const el = document.getElementById('business-ticker');
-    if (el) {
-        wordIdx = (wordIdx + 1) % tickerWords.length;
-        el.innerText = tickerWords[wordIdx];
-    }
-}, 3000);
+        // 语音搜索：支持中文识别
+        function toggleSearchVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return alert("Speech recognition not supported");
+            
+            const mic = document.getElementById('searchMic');
+            const input = document.getElementById('searchInput');
+            const recognition = new SpeechRecognition();
+            
+            recognition.lang = 'zh-CN'; 
+            recognition.onstart = () => { mic.classList.add('mic-active'); input.placeholder = "Listening..."; };
+            recognition.onend = () => { mic.classList.remove('mic-active'); input.placeholder = "Search..."; };
+            recognition.onresult = (e) => { input.value = e.results[0][0].transcript; };
+            recognition.start();
+        }
+
+        // 自动换词逻辑
+        const tickerWords = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67", "🏗️ BIZ: New Licenses"];
+        let wordIdx = 0;
+        setInterval(() => {
+            const el = document.getElementById('business-ticker');
+            if (el) {
+                wordIdx = (wordIdx + 1) % tickerWords.length;
+                el.innerText = tickerWords[wordIdx];
+            }
+        }, 3000);
     </script>
 </body>
 </html>
