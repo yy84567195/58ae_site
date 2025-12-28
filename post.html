@@ -11,7 +11,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
         
-        /* 蓝色点击波纹 */
         .click-pulse { animation: pulse-blue 0.5s; }
         @keyframes pulse-blue { 
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 
@@ -19,7 +18,6 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } 
         }
 
-        /* 红色录音呼吸 */
         .listening-animation { animation: pulse-red 1.5s infinite; background-color: #fee2e2 !important; border-color: #ef4444 !important; }
         .listening-icon { color: #ef4444 !important; }
         @keyframes pulse-red { 
@@ -28,7 +26,6 @@
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
         }
 
-        /* AI 思考特效 */
         .ai-thinking {
             background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
             background-size: 200% 100%;
@@ -107,13 +104,12 @@
     </main>
 
     <script>
-        // --- 数据库配置 (已填好你的 Key) ---
+        // --- 数据库配置 (Key 已填好) ---
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
 
         const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // 1. 图片预览
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
@@ -125,7 +121,7 @@
             }
         }
 
-        // 2. 伪 AI 分析逻辑 (含中文支持)
+        // --- 伪 AI 分析 (实时) ---
         let aiTimeout;
         function simulateAIAnalysis() {
             const text = document.getElementById('adContent').value.toLowerCase();
@@ -142,7 +138,6 @@
             aiTimeout = setTimeout(() => {
                 aiCard.classList.remove('ai-thinking');
                 
-                // 关键词判断
                 if (text.includes('car') || text.includes('车') || text.includes('bmw')) {
                     catEl.innerText = "🚗 Vehicles / 二手车";
                     priceEl.innerText = "Est. AED 20k - 50k";
@@ -165,7 +160,7 @@
             }, 800);
         }
 
-        // 3. 语音识别
+        // --- 录音逻辑 ---
         let recognition;
         let isListening = false;
         const rBtn = document.getElementById('recordBtn');
@@ -229,10 +224,9 @@
             }
         }
 
-        // 4. 发布逻辑
-// 4. 真正带“润色功能”的发布逻辑
+        // --- 🚀 发布逻辑 (含 AI 自动补全) ---
         async function handlePublish() {
-            let content = document.getElementById('adContent').value; // 注意这里用 let，因为我们要改它
+            let content = document.getElementById('adContent').value;
             const btnLabel = document.getElementById('btnText');
             const aiCategory = document.getElementById('aiCategory').innerText;
             
@@ -242,30 +236,29 @@
             }
 
             try {
-                btnLabel.innerText = "AI Polishing & Saving..."; // 提示用户正在润色
+                btnLabel.innerText = "AI Optimizing..."; 
                 
-                // --- ✨ 核心魔法：如果字数太少，自动帮他补全 ---
+                // ✨ AI 补全逻辑：如果字数太少，自动加引导词
                 if (content.length < 20) {
-                    if (aiCategory.includes('Vehicle') || aiCategory.includes('车')) {
-                        content += "\n\n[AI Suggested Details]:\n- GCC Specs\n- Accident Free\n- Perfect Condition\n- Contact for viewing";
+                     if (aiCategory.includes('Vehicle') || aiCategory.includes('车')) {
+                        content += "\n\n[AI Info]:\n- GCC Specs\n- Accident Free\n- Contact for details";
                     } else if (aiCategory.includes('Real Estate') || aiCategory.includes('房')) {
-                        content += "\n\n[AI Suggested Details]:\n- Close to Metro\n- Central A/C\n- Gym & Pool Access\n- Ready to move in";
+                        content += "\n\n[AI Info]:\n- Close to Metro\n- Central A/C\n- Ready to move in";
                     } else if (aiCategory.includes('Electronics') || aiCategory.includes('数码')) {
-                        content += "\n\n[AI Suggested Details]:\n- Original Box & Charger\n- No Scratches\n- Battery Health 90%+";
+                        content += "\n\n[AI Info]:\n- Original Box\n- Battery 90%+\n- No Scratches";
                     }
                 }
-                // --------------------------------------------------
 
+                // 存入数据库
                 const { error } = await sbClient.from('posts').insert([{ 
                     title: content.substring(0, 30), 
-                    description: content, // 存入的是润色后的内容
+                    description: content, 
                     category: aiCategory 
                 }]);
 
                 if (error) throw error;
 
                 alert('✅ AI has optimized your ad! Opening WhatsApp...');
-                // 跳转 WhatsApp
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
             } catch (err) {
                 alert('Error: ' + err.message);
