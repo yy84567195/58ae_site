@@ -19,14 +19,15 @@
 
     <nav class="sticky top-0 z-50 bg-white border-b px-4 py-4 flex items-center">
         <a href="index.html" class="text-slate-900 mr-4"><i class="fa-solid fa-xmark text-xl"></i></a>
-        <h1 class="text-lg font-extrabold">Create New Ad</h1>
+        <h1 class="text-lg font-extrabold text-slate-900">Create New Ad</h1>
     </nav>
 
     <main class="max-w-xl mx-auto p-4 space-y-8">
+
         <section>
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos</h2>
+            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos / Video</h2>
             <div class="grid grid-cols-3 gap-2">
-                <div class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer">
+                <div class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
                     <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
                     <span class="text-[10px] font-bold text-slate-400">ADD</span>
                 </div>
@@ -34,78 +35,97 @@
         </section>
 
         <section class="space-y-4">
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe</h2>
-            <div id="recordBtn" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 cursor-pointer active:scale-95 transition-all">
-                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200">
-                    <i class="fa-solid fa-microphone text-white text-2xl"></i>
-                </div>
-                <p class="mt-4 text-sm font-bold text-blue-600">Hold to Speak (AI Mode)</p>
-            </div>
+            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe (Voice or Text)</h2>
             
-            <div class="text-center text-slate-300 text-xs font-bold uppercase tracking-widest">OR USE TEXT</div>
+            <div id="recordBtn" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative overflow-hidden cursor-pointer active:scale-95 transition-all">
+                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200">
+                    <i class="fa-solid fa-microphone text-white text-3xl"></i>
+                </div>
+                <p class="mt-4 text-sm font-bold text-blue-600 animate-bounce">Hold to Speak</p>
+                <p class="text-[10px] text-blue-400 px-8 text-center mt-1">Our AI will automatically translate and categorize your ad in 13 languages.</p>
+            </div>
 
-            <textarea id="adContent" placeholder="Type price, location, features..." 
-                class="w-full h-32 p-4 bg-white border border-slate-200 rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none shadow-sm"></textarea>
+            <div class="text-center text-slate-300 text-xs font-bold">OR</div>
+
+            <textarea id="adContent" placeholder="Type your ad description here (Price, Location, Features)..." 
+                class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none"></textarea>
+        </section>
+
+        <section class="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+            <div class="flex items-center gap-2 mb-3">
+                <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
+                <h2 class="text-xs font-extrabold uppercase text-slate-900">AI Preview</h2>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-400">Detected Category:</span>
+                    <span class="font-bold text-blue-600">Factory Direct</span>
+                </div>
+            </div>
         </section>
 
         <div class="pt-4">
-            <button id="mainSubmitBtn" onclick="publishPost()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl shadow-green-100 flex items-center justify-center gap-3 active:scale-95 transition-all">
+            <button onclick="publishPost()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl shadow-green-100 flex items-center justify-center gap-3 active:scale-95 transition-all">
                 <i class="fa-brands fa-whatsapp text-2xl"></i>
                 <span id="btnText" class="font-extrabold text-lg">Post via WhatsApp</span>
             </button>
+            <p class="text-[10px] text-slate-400 text-center mt-4 px-6">
+                By posting, you agree to our terms. No password needed.
+            </p>
         </div>
+
     </main>
 
     <script>
-        // 1. 初始化 Supabase (地址已经帮你填好了)
+        // 2. 初始化数据库 (已经帮你填好地址了)
         const supabaseUrl = 'https://kjapiymhfevoansimuay.supabase.co';
         
-        // 【重要：请把你的长钥匙贴在下面两个单引号中间】
-        const supabaseKey = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
+        // 【在这里粘贴你刚才截图中那个 Publishable key】
+        const supabaseKey = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
 
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. 发布功能
+        // 3. 核心发布逻辑
         async function publishPost() {
-            const contentField = document.getElementById('adContent');
+            const content = document.getElementById('adContent').value;
             const btnText = document.getElementById('btnText');
             
-            if (!contentField.value.trim()) {
+            if (!content || content.trim() === "") {
                 alert("Please type something first! (请输入内容)");
                 return;
             }
 
             try {
-                btnText.innerText = "Saving to 58.ae...";
-                
-                // 存入数据库
+                btnText.innerText = "Processing..."; // 提示用户正在处理
+
+                // 把内容存入 Supabase
                 const { data, error } = await supabase
                     .from('posts')
                     .insert([
                         { 
-                            title: contentField.value.substring(0, 30),
-                            description: contentField.value,
-                            category: 'General' 
+                            title: content.substring(0, 30), // 取前30个字当标题
+                            description: content,
+                            category: 'Factory Direct' 
                         }
                     ]);
 
-                if (error) throw error;
+                if (error) throw error; // 如果出错了，直接跳到 catch 部分
 
                 // 成功后的反馈
-                alert('✅ Saved! Now redirecting to WhatsApp...');
+                alert('✅ 58.ae: Post saved successfully!');
                 
-                // 跳转 WhatsApp
-                const message = encodeURIComponent(`New Ad on 58.ae: ${contentField.value}`);
-                window.location.href = `https://wa.me/971500000000?text=${message}`;
+                // 自动跳转 WhatsApp
+                const whatsappMsg = encodeURIComponent("Hello 58.ae! I just posted: " + content);
+                window.location.href = "https://wa.me/971500000000?text=" + whatsappMsg;
 
             } catch (err) {
                 console.error(err);
-                alert('Error: ' + err.message);
+                alert('❌ Error: ' + err.message); // 如果失败了，会弹窗告诉你为什么
                 btnText.innerText = "Post via WhatsApp";
             }
         }
 
-        // 3. 录音按钮动效
+        // 4. 录音按钮动效
         const rBtn = document.getElementById('recordBtn');
         rBtn.addEventListener('mousedown', () => rBtn.classList.add('recording-pulse'));
         rBtn.addEventListener('mouseup', () => rBtn.classList.remove('recording-pulse'));
