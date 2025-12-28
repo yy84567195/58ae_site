@@ -12,7 +12,6 @@
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
         .recording-pulse { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-        .upload-dashed { border: 2px dashed #e2e8f0; }
     </style>
 </head>
 <body class="pb-10">
@@ -23,19 +22,8 @@
     </nav>
 
     <main class="max-w-xl mx-auto p-4 space-y-8">
-
-        <section>
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos / Video</h2>
-            <div class="grid grid-cols-3 gap-2">
-                <div class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer">
-                    <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
-                    <span class="text-[10px] font-bold text-slate-400">ADD</span>
-                </div>
-            </div>
-        </section>
-
         <section class="space-y-4">
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe</h2>
+            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Describe Your Ad</h2>
             <div id="recordBtn" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative cursor-pointer active:scale-95 transition-all">
                 <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200">
                     <i class="fa-solid fa-microphone text-white text-3xl"></i>
@@ -45,7 +33,7 @@
 
             <div class="text-center text-slate-300 text-xs font-bold uppercase tracking-widest">OR USE TEXT</div>
 
-            <textarea id="adContent" placeholder="Type your price, location, features..." 
+            <textarea id="adContent" placeholder="Type price, location, features..." 
                 class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none"></textarea>
         </section>
 
@@ -67,37 +55,36 @@
         </section>
 
         <div class="pt-4">
-            <button onclick="publishNow()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3">
+            <button onclick="handlePublish()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all">
                 <i class="fa-brands fa-whatsapp text-2xl"></i>
                 <span id="btnText" class="font-extrabold text-lg">Post via WhatsApp</span>
             </button>
         </div>
-
     </main>
 
     <script>
-        // --- 核心配置：只定义一次，绝对不报错 ---
+        // --- 核心修复：改用 sbClient 避免冲突 ---
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         
-        // 【在此粘贴你截图里那个 Publishable key】
+        // 【关键】在此贴入你截图里那个 sb_publishable 开头的长 Key
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
 
-        const client = supabase.createClient(SB_URL, SB_KEY);
+        const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-        async function publishNow() {
+        async function handlePublish() {
             const content = document.getElementById('adContent').value;
             const btnLabel = document.getElementById('btnText');
             
             if (!content || content.trim() === "") {
-                alert("Please type something! (请输入内容)");
+                alert("Please type something! (内容不能为空)");
                 return;
             }
 
             try {
-                btnLabel.innerText = "Saving to 58.ae...";
+                btnLabel.innerText = "Syncing with 58.ae...";
 
-                // 存入 Supabase
-                const { error } = await client
+                // 存入 Supabase (表名 posts)
+                const { error } = await sbClient
                     .from('posts')
                     .insert([{ 
                         title: content.substring(0, 30), 
@@ -107,17 +94,17 @@
 
                 if (error) throw error;
 
-                alert('✅ Successfully saved to database!');
+                alert('✅ Saved! Opening WhatsApp...');
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
 
             } catch (err) {
-                console.error("Error details:", err);
-                alert('❌ Error: ' + (err.message || "Unknown error"));
+                console.error("Debug Error:", err);
+                alert('❌ Error: ' + err.message);
                 btnLabel.innerText = "Post via WhatsApp";
             }
         }
 
-        // 录音效果
+        // 录音动效
         const rBtn = document.getElementById('recordBtn');
         rBtn.addEventListener('mousedown', () => rBtn.classList.add('recording-pulse'));
         rBtn.addEventListener('mouseup', () => rBtn.classList.remove('recording-pulse'));
