@@ -6,6 +6,7 @@
     <title>Post an Ad | 58.ae</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
@@ -17,7 +18,7 @@
 <body class="pb-10">
 
     <nav class="sticky top-0 z-50 bg-white border-b px-4 py-4 flex items-center">
-        <a href="javascript:history.back()" class="text-slate-900 mr-4"><i class="fa-solid fa-xmark text-xl"></i></a>
+        <a href="index.html" class="text-slate-900 mr-4"><i class="fa-solid fa-xmark text-xl"></i></a>
         <h1 class="text-lg font-extrabold">Create New Ad</h1>
     </nav>
 
@@ -30,16 +31,11 @@
                     <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
                     <span class="text-[10px] font-bold text-slate-400">ADD</span>
                 </div>
-                <div class="relative aspect-square rounded-2xl overflow-hidden shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
-                    <button class="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-                </div>
             </div>
         </section>
 
         <section class="space-y-4">
             <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe (Voice or Text)</h2>
-            
             <div class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative overflow-hidden">
                 <div id="recordBtn" class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 cursor-pointer active:scale-95 transition-all">
                     <i class="fa-solid fa-microphone text-white text-3xl"></i>
@@ -47,10 +43,8 @@
                 <p class="mt-4 text-sm font-bold text-blue-600 animate-bounce">Hold to Speak</p>
                 <p class="text-[10px] text-blue-400 px-8 text-center mt-1">Our AI will automatically translate and categorize your ad in 13 languages.</p>
             </div>
-
             <div class="text-center text-slate-300 text-xs font-bold">OR</div>
-
-            <textarea placeholder="Type your ad description here (Price, Location, Features)..." 
+            <textarea id="adContent" placeholder="Type your ad description here (Price, Location, Features)..." 
                 class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none"></textarea>
         </section>
 
@@ -74,21 +68,50 @@
         <div class="pt-4">
             <button onclick="publishPost()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl shadow-green-100 flex items-center justify-center gap-3 active:scale-95 transition-all">
                 <i class="fa-brands fa-whatsapp text-2xl"></i>
-                <span class="font-extrabold text-lg">Post via WhatsApp</span>
+                <span id="btnText" class="font-extrabold text-lg">Post via WhatsApp</span>
             </button>
-            <p class="text-[10px] text-slate-400 text-center mt-4 px-6">
-                By posting, you agree to our terms. No password needed. We use your WhatsApp for identity & 13-language chat.
-            </p>
         </div>
-
     </main>
 
     <script>
-        // 模拟 WhatsApp 授权跳转
-        function publishPost() {
-            const phoneNumber = "971500000000"; // 你的官方机器人号
-            const message = encodeURIComponent("Hello 58.ae! Please verify and publish my new ad. [ID:7721]");
-            window.location.href = `https://wa.me/${phoneNumber}?text=${message}`;
+        // 1. 初始化 Supabase 连接 (这里填入你的 ID 和 钥匙)
+        const supabaseUrl = 'https://kjapiymhfevoansimuay.supabase.co';
+        const supabaseKey = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function publishPost() {
+            const content = document.getElementById('adContent').value;
+            const btnText = document.getElementById('btnText');
+            
+            if (!content) {
+                alert("Please type something first!");
+                return;
+            }
+
+            btnText.innerText = "Publishing..."; // 修改按钮文字，给用户反馈
+
+            // 2. 将数据存入 Supabase 的 posts 表
+            const { data, error } = await supabase
+                .from('posts')
+                .insert([
+                    { 
+                        title: content.substring(0, 50), // 提取前50个字作为标题
+                        description: content,
+                        category: 'Factory Direct' 
+                    }
+                ]);
+
+            if (error) {
+                alert('Database Error: ' + error.message);
+                btnText.innerText = "Post via WhatsApp";
+            } else {
+                alert('✅ Successfully saved to 58.ae database!');
+                
+                // 3. 存完数据库后，再跳转到 WhatsApp (你原来的逻辑)
+                const phoneNumber = "971500000000"; 
+                const message = encodeURIComponent(`Hello 58.ae! I just posted: ${content}`);
+                window.location.href = `https://wa.me/${phoneNumber}?text=${message}`;
+            }
         }
 
         // 录音动效模拟
