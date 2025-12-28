@@ -28,7 +28,7 @@
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
         }
 
-        /* ✨ AI 思考时的流光效果 */
+        /* AI 思考特效 */
         .ai-thinking {
             background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
             background-size: 200% 100%;
@@ -70,7 +70,6 @@
                 <div id="innerCircle" class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 transition-transform duration-100">
                     <i id="micIcon" class="fa-solid fa-microphone text-white text-3xl transition-colors"></i>
                 </div>
-                
                 <p id="recordStatus" class="mt-4 text-sm font-bold text-blue-600 animate-bounce">Tap to Speak</p>
                 <p class="text-[10px] text-blue-400 px-8 text-center mt-1">AI Auto-Translate & Categorize</p>
             </div>
@@ -108,10 +107,8 @@
     </main>
 
     <script>
-        // --- 数据库配置 ---
+        // --- 数据库配置 (已填好你的 Key) ---
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
-        
-        // ⚠️【在此填入 Key】⚠️
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
 
         const sbClient = supabase.createClient(SB_URL, SB_KEY);
@@ -128,7 +125,7 @@
             }
         }
 
-        // 2. 伪 AI 分析逻辑 (让 App 看起来很聪明)
+        // 2. 伪 AI 分析逻辑 (含中文支持)
         let aiTimeout;
         function simulateAIAnalysis() {
             const text = document.getElementById('adContent').value.toLowerCase();
@@ -136,30 +133,30 @@
             const catEl = document.getElementById('aiCategory');
             const priceEl = document.getElementById('aiPrice');
 
-            // 只要一打字，就显示“正在思考”
             aiCard.classList.add('ai-thinking');
             catEl.innerText = "Analyzing...";
             priceEl.innerText = "...";
 
-            // 清除之前的定时器，防抖动
             clearTimeout(aiTimeout);
 
-            // 停下打字 0.8秒后，出结果
             aiTimeout = setTimeout(() => {
                 aiCard.classList.remove('ai-thinking');
                 
-                // 简单的关键词匹配规则
-                if (text.includes('car') || text.includes('toyota') || text.includes('bmw')) {
-                    catEl.innerText = "🚗 Vehicles / Cars";
+                // 关键词判断
+                if (text.includes('car') || text.includes('车') || text.includes('bmw')) {
+                    catEl.innerText = "🚗 Vehicles / 二手车";
                     priceEl.innerText = "Est. AED 20k - 50k";
-                } else if (text.includes('room') || text.includes('villa') || text.includes('rent')) {
-                    catEl.innerText = "🏠 Real Estate / Rent";
+                } 
+                else if (text.includes('room') || text.includes('villa') || text.includes('房') || text.includes('租')) {
+                    catEl.innerText = "🏠 Real Estate / 房产";
                     priceEl.innerText = "Est. AED 2,000 / month";
-                } else if (text.includes('phone') || text.includes('iphone') || text.includes('laptop')) {
-                    catEl.innerText = "📱 Electronics";
+                } 
+                else if (text.includes('phone') || text.includes('laptop') || text.includes('手机') || text.includes('电脑')) {
+                    catEl.innerText = "📱 Electronics / 数码";
                     priceEl.innerText = "Est. AED 1,500";
-                } else if (text.length > 5) {
-                    catEl.innerText = "📦 General / Factory Direct";
+                } 
+                else if (text.length > 2) {
+                    catEl.innerText = "📦 General / 综合";
                     priceEl.innerText = "Pending Review";
                 } else {
                     catEl.innerText = "Waiting for details...";
@@ -168,7 +165,7 @@
             }, 800);
         }
 
-        // 3. 语音识别 (带双重特效 + 自动触发 AI 分析)
+        // 3. 语音识别
         let recognition;
         let isListening = false;
         const rBtn = document.getElementById('recordBtn');
@@ -196,7 +193,7 @@
                 rBtn.classList.remove('listening-animation');
                 icon.classList.remove('listening-icon');
                 status.innerText = "Tap to Speak";
-                status.classList.add('animate-bounce'); // 恢复跳动
+                status.classList.add('animate-bounce');
                 status.classList.replace('text-red-500', 'text-blue-600');
             } else {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -208,7 +205,7 @@
                     isListening = true;
                     rBtn.classList.add('listening-animation');
                     icon.classList.add('listening-icon');
-                    status.classList.remove('animate-bounce'); // 录音时停止跳动
+                    status.classList.remove('animate-bounce');
                     status.innerText = "Listening...";
                     status.classList.replace('text-blue-600', 'text-red-500');
                 };
@@ -216,7 +213,7 @@
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
                     textarea.value += transcript + " ";
-                    simulateAIAnalysis(); // 语音输入完也触发 AI 分析！
+                    simulateAIAnalysis(); 
                 };
 
                 recognition.onend = function() {
@@ -236,7 +233,6 @@
         async function handlePublish() {
             const content = document.getElementById('adContent').value;
             const btnLabel = document.getElementById('btnText');
-            // 获取 AI 算出来的分类
             const aiCategory = document.getElementById('aiCategory').innerText;
             
             if (!content || content.trim() === "") {
@@ -245,12 +241,12 @@
             }
 
             try {
-                btnLabel.innerText = "AI Optimizing & Saving..."; // 按钮文字也变高级
+                btnLabel.innerText = "AI Optimizing..."; 
                 
                 const { error } = await sbClient.from('posts').insert([{ 
                     title: content.substring(0, 30), 
                     description: content, 
-                    category: aiCategory // 把 AI 分析的分类存进去
+                    category: aiCategory 
                 }]);
 
                 if (error) throw error;
