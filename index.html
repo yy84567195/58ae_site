@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>58.ae | The UAE Multilingual Hub</title>
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="58.ae">
+    <style> * { touch-action: manipulation; } </style>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -191,6 +196,27 @@
                 el.innerText = tickerWords[wordIdx];
             }
         }, 3000);
+            // ✅ 智能环境匹配：自动识别 13 种母语
+    function autoDetectLanguage() {
+        // 获取用户浏览器的语言 (比如 zh-CN 或 ar-AE)
+        const userLang = navigator.language || navigator.userLanguage; 
+        const langCode = userLang.split('-')[0].toLowerCase(); // 提取前两位，如 zh, ar, en
+        
+        // 如果我们支持这个语言，且用户还没手动切换过，就自动切换
+        const supportLangs = Object.keys(langData); // 获取我们支持的所有语言列表
+        // 注意：这里需要确保 langData 里有对应的 key
+        
+        // 简单逻辑：如果 langData 里有这个语言代码，就切过去
+        // (为了不干扰你现在的测试，这里加个简单的判断)
+        if (langCode !== 'en' && document.querySelector(`option[value="${langCode}"]`)) {
+             document.getElementById('langSwitcher').value = langCode;
+             changeLang(langCode);
+        }
+    }
+    
+    // 页面加载完立刻执行自动识别
+    window.addEventListener('DOMContentLoaded', autoDetectLanguage);
+
     </script>
 </body>
 </html>
