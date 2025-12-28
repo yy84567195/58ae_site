@@ -11,15 +11,24 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
         
-        /* 录音波纹动画 */
+        /* ✅ 1. 找回了你喜欢的蓝色点击特效 */
+        .click-pulse { animation: pulse-blue 0.5s; }
+        @keyframes pulse-blue { 
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 
+            70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(37, 99, 235, 0); } 
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } 
+        }
+
+        /* ✅ 2. 录音时的红色呼吸特效 */
         .listening-animation { animation: pulse-red 1.5s infinite; background-color: #fee2e2 !important; border-color: #ef4444 !important; }
-        .listening-icon { color: #ef4444 !important; animation: bounce 1s infinite; }
+        .listening-icon { color: #ef4444 !important; }
         
         @keyframes pulse-red { 
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
             70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
         }
+        
         .upload-dashed { border: 2px dashed #e2e8f0; }
     </style>
 </head>
@@ -36,15 +45,12 @@
             <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos</h2>
             <div class="grid grid-cols-3 gap-2">
                 <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
-                
                 <div onclick="document.getElementById('hiddenFileInput').click()" id="uploadBox"
-                     class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden relative">
-                    
+                     class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden relative active:bg-slate-100">
                     <div id="uploadIcon" class="flex flex-col items-center">
                         <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
                         <span class="text-[10px] font-bold text-slate-400">ADD</span>
                     </div>
-                    
                     <img id="imagePreview" class="hidden w-full h-full object-cover absolute top-0 left-0">
                 </div>
             </div>
@@ -53,10 +59,11 @@
         <section class="space-y-4">
             <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe</h2>
             
-            <div id="recordBtn" onclick="toggleVoice()" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative cursor-pointer active:scale-95 transition-all">
-                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 transition-colors">
-                    <i id="micIcon" class="fa-solid fa-microphone text-white text-3xl"></i>
+            <div id="recordBtn" onclick="toggleVoice()" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative cursor-pointer transition-all select-none">
+                <div id="innerCircle" class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 transition-transform duration-100">
+                    <i id="micIcon" class="fa-solid fa-microphone text-white text-3xl transition-colors"></i>
                 </div>
+                
                 <p id="recordStatus" class="mt-4 text-sm font-bold text-blue-600">Tap to Speak</p>
                 <p class="text-[10px] text-blue-400 px-8 text-center mt-1">Supports English/Chinese/Arabic</p>
             </div>
@@ -97,12 +104,12 @@
         // --- 数据库配置 ---
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         
-        // ⚠️【请在这里填入 Key】⚠️
+        // ⚠️【在此填入 Key】⚠️
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
 
         const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // 1. 图片预览逻辑
+        // 1. 图片预览
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
@@ -114,17 +121,33 @@
             }
         }
 
-        // 2. 语音识别逻辑
+        // 2. 语音识别 (带双重特效)
         let recognition;
         let isListening = false;
 
+        // 给按钮加点击手感（按下时缩小）
+        const rBtn = document.getElementById('recordBtn');
+        const innerCircle = document.getElementById('innerCircle');
+        
+        rBtn.addEventListener('mousedown', () => {
+            if(!isListening) innerCircle.classList.add('scale-95'); // 按下缩小
+        });
+        rBtn.addEventListener('mouseup', () => {
+            innerCircle.classList.remove('scale-95'); // 抬起恢复
+            if(!isListening) {
+                // 触发蓝色波纹动画
+                innerCircle.classList.remove('click-pulse');
+                void innerCircle.offsetWidth; // 触发重绘
+                innerCircle.classList.add('click-pulse');
+            }
+        });
+
         function toggleVoice() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Sorry, voice input is not supported. Please type.");
+                alert("Please type directly (Voice not supported).");
                 return;
             }
 
-            const btn = document.getElementById('recordBtn');
             const status = document.getElementById('recordStatus');
             const icon = document.getElementById('micIcon');
             const textarea = document.getElementById('adContent');
@@ -132,7 +155,8 @@
             if (isListening) {
                 recognition.stop();
                 isListening = false;
-                btn.classList.remove('listening-animation');
+                // 移除红色特效
+                rBtn.classList.remove('listening-animation');
                 icon.classList.remove('listening-icon');
                 status.innerText = "Tap to Speak";
                 status.classList.replace('text-red-500', 'text-blue-600');
@@ -141,13 +165,13 @@
                 recognition = new SpeechRecognition();
                 recognition.lang = 'zh-CN'; 
                 recognition.continuous = false;
-                recognition.interimResults = false;
 
                 recognition.onstart = function() {
                     isListening = true;
-                    btn.classList.add('listening-animation');
+                    // 添加红色特效
+                    rBtn.classList.add('listening-animation');
                     icon.classList.add('listening-icon');
-                    status.innerText = "Listening... Speak Now";
+                    status.innerText = "Listening...";
                     status.classList.replace('text-blue-600', 'text-red-500');
                 };
 
@@ -158,7 +182,7 @@
 
                 recognition.onend = function() {
                     isListening = false;
-                    btn.classList.remove('listening-animation');
+                    rBtn.classList.remove('listening-animation');
                     icon.classList.remove('listening-icon');
                     status.innerText = "Tap to Speak";
                     status.classList.replace('text-red-500', 'text-blue-600');
@@ -168,20 +192,19 @@
             }
         }
 
-        // 3. 发布逻辑 (您之前报错的地方已修复)
+        // 3. 发布逻辑
         async function handlePublish() {
             const content = document.getElementById('adContent').value;
-            const btnLabel = document.getElementById('btnText'); // 这一行现在绝对正确
+            const btnLabel = document.getElementById('btnText');
             
             if (!content || content.trim() === "") {
-                alert("Please type or speak something first!");
+                alert("Please enter content!");
                 return;
             }
 
             try {
                 btnLabel.innerText = "Syncing..."; 
                 
-                // 存入数据库
                 const { error } = await sbClient.from('posts').insert([{ 
                     title: content.substring(0, 30), 
                     description: content, 
@@ -193,8 +216,7 @@
                 alert('✅ Saved!');
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
             } catch (err) {
-                console.error(err);
-                alert('❌ Error: ' + err.message);
+                alert('Error: ' + err.message);
                 btnLabel.innerText = "Post via WhatsApp";
             }
         }
