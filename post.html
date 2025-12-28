@@ -19,7 +19,7 @@
 
     <nav class="sticky top-0 z-50 bg-white border-b px-4 py-4 flex items-center">
         <a href="index.html" class="text-slate-900 mr-4"><i class="fa-solid fa-xmark text-xl"></i></a>
-        <h1 class="text-lg font-extrabold">Create New Ad</h1>
+        <h1 class="text-lg font-extrabold text-slate-900">Create New Ad</h1>
     </nav>
 
     <main class="max-w-xl mx-auto p-4 space-y-8">
@@ -35,18 +35,17 @@
         </section>
 
         <section class="space-y-4">
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe (Voice or Text)</h2>
+            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe</h2>
             <div id="recordBtn" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative cursor-pointer active:scale-95 transition-all">
                 <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200">
                     <i class="fa-solid fa-microphone text-white text-3xl"></i>
                 </div>
-                <p class="mt-4 text-sm font-bold text-blue-600">Hold to Speak</p>
-                <p class="text-[10px] text-blue-400 px-8 text-center mt-1">AI will translate into 13 languages.</p>
+                <p class="mt-4 text-sm font-bold text-blue-600 animate-bounce">Hold to Speak</p>
             </div>
 
-            <div class="text-center text-slate-300 text-xs font-bold">OR</div>
+            <div class="text-center text-slate-300 text-xs font-bold uppercase tracking-widest">OR USE TEXT</div>
 
-            <textarea id="adContent" placeholder="Type your ad description here..." 
+            <textarea id="adContent" placeholder="Type your price, location, features..." 
                 class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none"></textarea>
         </section>
 
@@ -68,7 +67,7 @@
         </section>
 
         <div class="pt-4">
-            <button id="postBtn" onclick="publishNow()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl shadow-green-100 flex items-center justify-center gap-3 active:scale-95 transition-all">
+            <button onclick="publishNow()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3">
                 <i class="fa-brands fa-whatsapp text-2xl"></i>
                 <span id="btnText" class="font-extrabold text-lg">Post via WhatsApp</span>
             </button>
@@ -77,17 +76,17 @@
     </main>
 
     <script>
-        // 2. 数据库连接设置
-        const supabaseUrl = 'https://kjapiymhfevoansimuay.supabase.co';
+        // --- 核心配置：只定义一次，绝对不报错 ---
+        const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         
-        // 【关键】请在这里粘贴你截图里的那个 Publishable key
-        const supabaseKey = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
+        // 【在此粘贴你截图里那个 Publishable key】
+        const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
 
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const client = supabase.createClient(SB_URL, SB_KEY);
 
         async function publishNow() {
             const content = document.getElementById('adContent').value;
-            const btnText = document.getElementById('btnText');
+            const btnLabel = document.getElementById('btnText');
             
             if (!content || content.trim() === "") {
                 alert("Please type something! (请输入内容)");
@@ -95,10 +94,10 @@
             }
 
             try {
-                btnText.innerText = "Saving to Database...";
+                btnLabel.innerText = "Saving to 58.ae...";
 
-                // 存入数据库
-                const { data, error } = await supabase
+                // 存入 Supabase
+                const { error } = await client
                     .from('posts')
                     .insert([{ 
                         title: content.substring(0, 30), 
@@ -108,17 +107,17 @@
 
                 if (error) throw error;
 
-                // 成功后弹窗并跳转
-                alert('✅ Saved successfully!');
+                alert('✅ Successfully saved to database!');
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
 
             } catch (err) {
-                alert('❌ Error: ' + err.message);
-                btnText.innerText = "Post via WhatsApp";
+                console.error("Error details:", err);
+                alert('❌ Error: ' + (err.message || "Unknown error"));
+                btnLabel.innerText = "Post via WhatsApp";
             }
         }
 
-        // 录音动效
+        // 录音效果
         const rBtn = document.getElementById('recordBtn');
         rBtn.addEventListener('mousedown', () => rBtn.classList.add('recording-pulse'));
         rBtn.addEventListener('mouseup', () => rBtn.classList.remove('recording-pulse'));
