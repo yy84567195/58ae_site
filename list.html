@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Category List | 58.ae</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .filter-chip { transition: all 0.2s; white-space: nowrap; }
+        .filter-chip.active { background-color: #2563eb; color: white; border-color: #2563eb; }
+        .listing-card { background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body class="pb-20">
+
+    <nav class="sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="text-slate-600"><i class="fa-solid fa-arrow-left text-lg"></i></a>
+            <h1 class="text-lg font-bold text-slate-900" id="categoryTitle">Factory Direct</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-blue-100">
+                <i class="fa-solid fa-language mr-1"></i> AI Translate
+            </button>
+        </div>
+    </nav>
+
+    <div class="bg-white px-4 py-3 shadow-sm">
+        <div class="relative mb-3">
+            <input type="text" placeholder="Search in this category..." class="w-full bg-slate-100 border-none rounded-xl py-2 pl-10 pr-4 text-sm outline-none">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        </div>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+            <button class="filter-chip active border px-3 py-1 rounded-full text-xs font-semibold">All Areas</button>
+            <button class="filter-chip border px-3 py-1 rounded-full text-xs font-semibold text-slate-500">Dubai Marina</button>
+            <button class="filter-chip border px-3 py-1 rounded-full text-xs font-semibold text-slate-500">Deira</button>
+            <button class="filter-chip border px-3 py-1 rounded-full text-xs font-semibold text-slate-500">Business Bay</button>
+            <button class="filter-chip border px-3 py-1 rounded-full text-xs font-semibold text-slate-500">International City</button>
+        </div>
+    </div>
+
+    <main class="p-4 space-y-4">
+
+        <div class="listing-card shadow-sm">
+            <div class="relative">
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=400" class="w-full h-48 object-cover">
+                <div class="absolute top-3 left-3 bg-slate-900/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded font-bold uppercase">
+                    Factory
+                </div>
+                <div class="absolute bottom-3 right-3 bg-blue-600 text-white text-[10px] px-2 py-1 rounded-full font-bold">
+                    Verified
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 class="font-bold text-slate-900 leading-tight">High-Precision CNC Machine Supply</h3>
+                    <span class="text-blue-600 font-extrabold text-sm">$12,000</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-3 line-clamp-2">源头工厂直供，支持定制，提供全套迪拜落地安装及售后服务。Direct factory supply...</p>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-1 rounded">MOQ: 1 Unit</span>
+                    <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-1 rounded">Origin: Guangdong</span>
+                    <span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-1 rounded font-bold">#CryptoFriendly</span>
+                </div>
+
+                <div class="flex items-center justify-between border-t pt-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">🇨🇳</div>
+                        <span class="text-[10px] font-bold text-slate-700">China Factory</span>
+                    </div>
+                    <button class="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg">
+                        <i class="fa-solid fa-comment-dots mr-1"></i> AI Chat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="listing-card shadow-sm">
+            <div class="p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 class="font-bold text-slate-900 leading-tight">Chinese/English Sales Consultant</h3>
+                        <p class="text-[10px] text-blue-600 font-bold mt-1">Real Estate Agency | Business Bay</p>
+                    </div>
+                    <span class="text-emerald-600 font-extrabold text-sm">AED 8,000+</span>
+                </div>
+                <div class="flex gap-2 mb-4">
+                    <span class="bg-orange-50 text-orange-600 text-[10px] px-2 py-1 rounded font-bold">Visa Provided</span>
+                    <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-1 rounded font-bold">Commission</span>
+                </div>
+                <div class="flex items-center justify-between border-t pt-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">🇦🇪</div>
+                        <span class="text-[10px] font-bold text-slate-700">Local Agency</span>
+                    </div>
+                    <button class="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-lg">
+                        AI Chat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="fixed bottom-6 right-6 z-50">
+        <button class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center text-xl hover:rotate-90 transition-transform">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+</body>
+</html>
