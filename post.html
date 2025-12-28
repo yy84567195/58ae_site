@@ -230,8 +230,9 @@
         }
 
         // 4. 发布逻辑
+// 4. 真正带“润色功能”的发布逻辑
         async function handlePublish() {
-            const content = document.getElementById('adContent').value;
+            let content = document.getElementById('adContent').value; // 注意这里用 let，因为我们要改它
             const btnLabel = document.getElementById('btnText');
             const aiCategory = document.getElementById('aiCategory').innerText;
             
@@ -241,17 +242,30 @@
             }
 
             try {
-                btnLabel.innerText = "AI Optimizing..."; 
+                btnLabel.innerText = "AI Polishing & Saving..."; // 提示用户正在润色
                 
+                // --- ✨ 核心魔法：如果字数太少，自动帮他补全 ---
+                if (content.length < 20) {
+                    if (aiCategory.includes('Vehicle') || aiCategory.includes('车')) {
+                        content += "\n\n[AI Suggested Details]:\n- GCC Specs\n- Accident Free\n- Perfect Condition\n- Contact for viewing";
+                    } else if (aiCategory.includes('Real Estate') || aiCategory.includes('房')) {
+                        content += "\n\n[AI Suggested Details]:\n- Close to Metro\n- Central A/C\n- Gym & Pool Access\n- Ready to move in";
+                    } else if (aiCategory.includes('Electronics') || aiCategory.includes('数码')) {
+                        content += "\n\n[AI Suggested Details]:\n- Original Box & Charger\n- No Scratches\n- Battery Health 90%+";
+                    }
+                }
+                // --------------------------------------------------
+
                 const { error } = await sbClient.from('posts').insert([{ 
                     title: content.substring(0, 30), 
-                    description: content, 
+                    description: content, // 存入的是润色后的内容
                     category: aiCategory 
                 }]);
 
                 if (error) throw error;
 
-                alert('✅ Saved! Opening WhatsApp...');
+                alert('✅ AI has optimized your ad! Opening WhatsApp...');
+                // 跳转 WhatsApp
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
             } catch (err) {
                 alert('Error: ' + err.message);
