@@ -27,9 +27,18 @@
         <section>
             <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos / Video</h2>
             <div class="grid grid-cols-3 gap-2">
-                <div class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
-                    <span class="text-[10px] font-bold text-slate-400">ADD</span>
+                <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
+
+                <div onclick="document.getElementById('hiddenFileInput').click()" 
+                     id="uploadBox"
+                     class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden relative">
+                    
+                    <div id="uploadIcon" class="flex flex-col items-center">
+                        <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
+                        <span class="text-[10px] font-bold text-slate-400">ADD</span>
+                    </div>
+
+                    <img id="imagePreview" class="hidden w-full h-full object-cover absolute top-0 left-0">
                 </div>
             </div>
         </section>
@@ -77,56 +86,63 @@
     </main>
 
     <script>
-        // ----------------------------------------
-        // 👇 请在这里一定要小心粘贴 Key 👇
-        // ----------------------------------------
+        // --- 这里填 Key ---
+        const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         
-        const PROJECT_URL = 'https://kjapiymhfevoansimuay.supabase.co';
-        
-        // 注意：Key 必须在两个单引号 '' 中间，不能有回车
-        const API_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
+        // 【千万小心】请把 Key 完整粘贴到下面的单引号里，保留引号
+        const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
 
-        // ----------------------------------------
+        const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // 为了防止报错，我给变量换了个名字叫 db
-        const db = supabase.createClient(PROJECT_URL, API_KEY);
+        // ✅ 新增功能：处理图片预览
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // 1. 创建一个临时的预览链接
+                const src = URL.createObjectURL(file);
+                // 2. 隐藏图标，显示图片
+                document.getElementById('uploadIcon').classList.add('hidden');
+                const img = document.getElementById('imagePreview');
+                img.src = src;
+                img.classList.remove('hidden');
+            }
+        }
 
         async function handlePublish() {
             const content = document.getElementById('adContent').value;
             const btnLabel = document.getElementById('btnText');
             
-            // 1. 检查有没有填内容
             if (!content || content.trim() === "") {
                 alert("Please type something! (请输入内容)");
                 return;
             }
 
             try {
-                btnLabel.innerText = "Syncing..."; // 按钮文字变一下，证明在动
+                btnLabel.innerText = "Syncing..."; 
 
-                // 2. 存入数据库
-                const { error } = await db
+                // 存入 Supabase
+                const { error } = await sbClient
                     .from('posts')
                     .insert([{ 
                         title: content.substring(0, 30), 
                         description: content, 
-                        category: 'Factory Direct' 
+                        category: 'Factory Direct',
+                        // 注意：我们暂时还没有配置云存储，所以这里先不传图片地址
+                        // 等你熟练了，我们再做图片上传到云端的功能
                     }]);
 
                 if (error) throw error;
 
-                // 3. 成功！
                 alert('✅ Saved! Opening WhatsApp...');
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
 
             } catch (err) {
-                // 如果报错，弹窗告诉你哪里错了
                 alert('❌ Error: ' + err.message);
                 btnLabel.innerText = "Post via WhatsApp";
             }
         }
 
-        // 录音按钮动效
+        // 录音动效
         const rBtn = document.getElementById('recordBtn');
         if(rBtn) {
             rBtn.addEventListener('mousedown', () => rBtn.classList.add('recording-pulse'));
