@@ -11,7 +11,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
         
-        /* ✅ 1. 找回了你喜欢的蓝色点击特效 */
+        /* 蓝色点击波纹 */
         .click-pulse { animation: pulse-blue 0.5s; }
         @keyframes pulse-blue { 
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 
@@ -19,16 +19,23 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } 
         }
 
-        /* ✅ 2. 录音时的红色呼吸特效 */
+        /* 红色录音呼吸 */
         .listening-animation { animation: pulse-red 1.5s infinite; background-color: #fee2e2 !important; border-color: #ef4444 !important; }
         .listening-icon { color: #ef4444 !important; }
-        
         @keyframes pulse-red { 
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
             70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
         }
-        
+
+        /* ✨ AI 思考时的流光效果 */
+        .ai-thinking {
+            background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
         .upload-dashed { border: 2px dashed #e2e8f0; }
     </style>
 </head>
@@ -64,29 +71,29 @@
                     <i id="micIcon" class="fa-solid fa-microphone text-white text-3xl transition-colors"></i>
                 </div>
                 
-                <p id="recordStatus" class="mt-4 text-sm font-bold text-blue-600">Tap to Speak</p>
-                <p class="text-[10px] text-blue-400 px-8 text-center mt-1">Supports English/Chinese/Arabic</p>
+                <p id="recordStatus" class="mt-4 text-sm font-bold text-blue-600 animate-bounce">Tap to Speak</p>
+                <p class="text-[10px] text-blue-400 px-8 text-center mt-1">AI Auto-Translate & Categorize</p>
             </div>
 
             <div class="text-center text-slate-300 text-xs font-bold uppercase tracking-widest">OR TYPE</div>
 
-            <textarea id="adContent" placeholder="Say something or type here..." 
-                class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none"></textarea>
+            <textarea id="adContent" oninput="simulateAIAnalysis()" placeholder="Say something or type here..." 
+                class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none transition-all"></textarea>
         </section>
 
-        <section class="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+        <section id="aiCard" class="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm transition-all">
             <div class="flex items-center gap-2 mb-3">
                 <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
-                <h2 class="text-xs font-extrabold uppercase text-slate-900">AI Preview</h2>
+                <h2 class="text-xs font-extrabold uppercase text-slate-900">AI Analysis</h2>
             </div>
             <div class="space-y-2">
                 <div class="flex justify-between text-xs">
                     <span class="text-slate-400">Detected Category:</span>
-                    <span class="font-bold text-blue-600">Factory Direct</span>
+                    <span id="aiCategory" class="font-bold text-blue-600">Waiting for input...</span>
                 </div>
                 <div class="flex justify-between text-xs">
                     <span class="text-slate-400">Suggested Price:</span>
-                    <span class="font-bold text-slate-900">AED 5,000</span>
+                    <span id="aiPrice" class="font-bold text-slate-900">--</span>
                 </div>
             </div>
         </section>
@@ -121,30 +128,61 @@
             }
         }
 
-        // 2. 语音识别 (带双重特效)
+        // 2. 伪 AI 分析逻辑 (让 App 看起来很聪明)
+        let aiTimeout;
+        function simulateAIAnalysis() {
+            const text = document.getElementById('adContent').value.toLowerCase();
+            const aiCard = document.getElementById('aiCard');
+            const catEl = document.getElementById('aiCategory');
+            const priceEl = document.getElementById('aiPrice');
+
+            // 只要一打字，就显示“正在思考”
+            aiCard.classList.add('ai-thinking');
+            catEl.innerText = "Analyzing...";
+            priceEl.innerText = "...";
+
+            // 清除之前的定时器，防抖动
+            clearTimeout(aiTimeout);
+
+            // 停下打字 0.8秒后，出结果
+            aiTimeout = setTimeout(() => {
+                aiCard.classList.remove('ai-thinking');
+                
+                // 简单的关键词匹配规则
+                if (text.includes('car') || text.includes('toyota') || text.includes('bmw')) {
+                    catEl.innerText = "🚗 Vehicles / Cars";
+                    priceEl.innerText = "Est. AED 20k - 50k";
+                } else if (text.includes('room') || text.includes('villa') || text.includes('rent')) {
+                    catEl.innerText = "🏠 Real Estate / Rent";
+                    priceEl.innerText = "Est. AED 2,000 / month";
+                } else if (text.includes('phone') || text.includes('iphone') || text.includes('laptop')) {
+                    catEl.innerText = "📱 Electronics";
+                    priceEl.innerText = "Est. AED 1,500";
+                } else if (text.length > 5) {
+                    catEl.innerText = "📦 General / Factory Direct";
+                    priceEl.innerText = "Pending Review";
+                } else {
+                    catEl.innerText = "Waiting for details...";
+                    priceEl.innerText = "--";
+                }
+            }, 800);
+        }
+
+        // 3. 语音识别 (带双重特效 + 自动触发 AI 分析)
         let recognition;
         let isListening = false;
-
-        // 给按钮加点击手感（按下时缩小）
         const rBtn = document.getElementById('recordBtn');
         const innerCircle = document.getElementById('innerCircle');
         
-        rBtn.addEventListener('mousedown', () => {
-            if(!isListening) innerCircle.classList.add('scale-95'); // 按下缩小
-        });
-        rBtn.addEventListener('mouseup', () => {
-            innerCircle.classList.remove('scale-95'); // 抬起恢复
-            if(!isListening) {
-                // 触发蓝色波纹动画
-                innerCircle.classList.remove('click-pulse');
-                void innerCircle.offsetWidth; // 触发重绘
-                innerCircle.classList.add('click-pulse');
-            }
+        rBtn.addEventListener('mousedown', () => { if(!isListening) innerCircle.classList.add('scale-95'); });
+        rBtn.addEventListener('mouseup', () => { 
+            innerCircle.classList.remove('scale-95'); 
+            if(!isListening) { innerCircle.classList.remove('click-pulse'); void innerCircle.offsetWidth; innerCircle.classList.add('click-pulse'); }
         });
 
         function toggleVoice() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Please type directly (Voice not supported).");
+                alert("Please type directly.");
                 return;
             }
 
@@ -155,10 +193,10 @@
             if (isListening) {
                 recognition.stop();
                 isListening = false;
-                // 移除红色特效
                 rBtn.classList.remove('listening-animation');
                 icon.classList.remove('listening-icon');
                 status.innerText = "Tap to Speak";
+                status.classList.add('animate-bounce'); // 恢复跳动
                 status.classList.replace('text-red-500', 'text-blue-600');
             } else {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -168,16 +206,17 @@
 
                 recognition.onstart = function() {
                     isListening = true;
-                    // 添加红色特效
                     rBtn.classList.add('listening-animation');
                     icon.classList.add('listening-icon');
+                    status.classList.remove('animate-bounce'); // 录音时停止跳动
                     status.innerText = "Listening...";
                     status.classList.replace('text-blue-600', 'text-red-500');
                 };
 
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
-                    textarea.value += transcript + " "; 
+                    textarea.value += transcript + " ";
+                    simulateAIAnalysis(); // 语音输入完也触发 AI 分析！
                 };
 
                 recognition.onend = function() {
@@ -185,6 +224,7 @@
                     rBtn.classList.remove('listening-animation');
                     icon.classList.remove('listening-icon');
                     status.innerText = "Tap to Speak";
+                    status.classList.add('animate-bounce');
                     status.classList.replace('text-red-500', 'text-blue-600');
                 };
 
@@ -192,10 +232,12 @@
             }
         }
 
-        // 3. 发布逻辑
+        // 4. 发布逻辑
         async function handlePublish() {
             const content = document.getElementById('adContent').value;
             const btnLabel = document.getElementById('btnText');
+            // 获取 AI 算出来的分类
+            const aiCategory = document.getElementById('aiCategory').innerText;
             
             if (!content || content.trim() === "") {
                 alert("Please enter content!");
@@ -203,17 +245,17 @@
             }
 
             try {
-                btnLabel.innerText = "Syncing..."; 
+                btnLabel.innerText = "AI Optimizing & Saving..."; // 按钮文字也变高级
                 
                 const { error } = await sbClient.from('posts').insert([{ 
                     title: content.substring(0, 30), 
                     description: content, 
-                    category: 'Factory Direct'
+                    category: aiCategory // 把 AI 分析的分类存进去
                 }]);
 
                 if (error) throw error;
 
-                alert('✅ Saved!');
+                alert('✅ Saved! Opening WhatsApp...');
                 window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
             } catch (err) {
                 alert('Error: ' + err.message);
