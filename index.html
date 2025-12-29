@@ -12,22 +12,26 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; touch-action: manipulation; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .nav-card { transition: transform 0.1s; border-radius: 1.25rem; background: white; border: 1px solid #e2e8f0; }
         .nav-card:active { transform: scale(0.95); background: #f8fafc; }
         .icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 1.2rem; }
         .badge-ai { background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 800; }
         
-        /* 语音搜索特效 */
+        /* 瀑布流卡片样式 */
+        .feed-card { break-inside: avoid; margin-bottom: 1rem; background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .feed-card img { width: 100%; height: 160px; object-fit: cover; }
+        
+        /* 语音特效 */
         .mic-active { color: #ef4444 !important; animation: micPulse 1s infinite; }
         @keyframes micPulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         #business-ticker { transition: all 0.5s ease; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
-    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b">
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b shadow-sm">
         <div class="flex items-center gap-2">
             <span class="text-2xl font-black italic tracking-tighter text-slate-900">58<span class="text-blue-600">.ae</span></span>
             <div class="badge-ai animate-pulse">AI ACTIVE</div>
@@ -51,9 +55,9 @@
         </div>
     </nav>
 
-    <header class="bg-white px-4 pt-6 pb-4">
+    <header class="bg-white px-4 pt-6 pb-4 mb-2">
         <div class="relative group mb-4">
-            <input type="text" id="searchInput" placeholder="Search factory, jobs, home in your language..." 
+            <input type="text" id="searchInput" placeholder="Search factory, jobs, home..." 
                 class="w-full bg-slate-100 border-none rounded-2xl py-4 pl-12 pr-12 text-sm font-medium outline-none focus:ring-2 ring-blue-500 transition-all">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <i id="searchMic" onclick="toggleSearchVoice()" class="fa-solid fa-microphone absolute right-4 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer p-2"></i>
@@ -92,7 +96,6 @@
                     <span class="text-[10px] font-bold text-slate-400 block text-right">GROW YOUR WEALTH</span>
                 </div>
             </div>
-            
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                 <div onclick="window.location.href='list.html'" class="nav-card p-4 border-amber-200 ring-2 ring-amber-50 shadow-lg cursor-pointer">
                     <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
@@ -116,26 +119,25 @@
                 <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-users-viewfinder"></i></div><span class="text-[10px] font-bold" data-key="talents">Hire Talents</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-passport"></i></div><span class="text-[10px] font-bold" data-key="visa">Visa/PRO</span></div>
                 <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-file-contract"></i></div><span class="text-[10px] font-bold" data-key="setup">Company Setup</span></div>
-                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-building-columns"></i></div><span class="text-[10px] font-bold" data-key="banking">Banking</span></div>
-                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-book"></i></div><span class="text-[10px] font-bold" data-key="wiki">UAE Wiki</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-solid fa-map-location-dot"></i></div><span class="text-[10px] font-bold" data-key="otc">OTC Map</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-brands fa-ethereum"></i></div><span class="text-[10px] font-bold" data-key="web3">Web3 Ops</span></div>
             </div>
         </section>
 
-        <section class="pb-8">
-            <div class="flex justify-between items-end mb-4 px-1">
-                <h2 class="text-sm font-black text-purple-600 uppercase tracking-widest" data-key="sec_tech">Tech & Web3</h2>
-                <span class="text-[10px] font-bold text-slate-400">FUTURE READY</span>
+        <section class="mt-8 border-t border-slate-200 pt-6">
+            <div class="flex items-center gap-2 mb-4 px-1">
+                <i class="fa-solid fa-fire text-red-500"></i>
+                <h3 class="text-base font-black text-slate-900">Fresh Recommendations</h3>
             </div>
-            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
-                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-solid fa-map-location-dot"></i></div><span class="text-[10px] font-bold" data-key="otc">OTC Map</span></div>
-                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-brands fa-ethereum"></i></div><span class="text-[10px] font-bold" data-key="web3">Web3 Ops</span></div>
-                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-solid fa-microchip"></i></div><span class="text-[10px] font-bold" data-key="ai">AI/Compute</span></div>
+            
+            <div id="waterfall-feed" class="columns-2 gap-3 space-y-3">
+                <div class="text-center text-xs text-slate-400 py-10 w-full col-span-2">Loading latest posts...</div>
             </div>
         </section>
 
     </main>
 
-    <footer class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t px-6 py-2 flex justify-between items-center max-w-6xl mx-auto shadow-2xl">
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t px-6 py-2 flex justify-between items-center max-w-6xl mx-auto shadow-2xl z-50">
         <div class="flex flex-col items-center text-blue-600"><i class="fa-solid fa-house text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Home</span></div>
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-message text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Chat</span></div>
         <div class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl">
@@ -148,27 +150,13 @@
     </footer>
 
     <script>
-        // ==========================================
-        // 1. 语言包 (13种语言支持)
-        // ==========================================
+        // 语言包
         const langData = {
-            zh: {
-                sec_living: "生活与房产", property: "房产租售", motors: "二手汽车", market: "闲置市场", services: "生活服务", logistics: "物流搬家", health: "医疗教育",
-                sec_business: "商业与贸易", factory: "工厂直供", broker: "资源/掮客", micro: "小本生意", sourcing: "全球找货", invest: "投资机会", legal: "法律/会计",
-                sec_career: "招聘与进阶", jobs: "找工作", talents: "招人才", visa: "签证代办", setup: "执照注册", banking: "银行开户", wiki: "旅居百科",
-                sec_tech: "高新科技", otc: "OTC地图", web3: "Web3职位", ai: "AI/算力租赁"
-            },
-            en: {
-                sec_living: "Living", property: "Property", motors: "Motors", market: "Market", services: "Services", logistics: "Logistics", health: "Health",
-                sec_business: "Business & Trade", factory: "Factory Direct", broker: "Opportunities", micro: "Micro Biz", sourcing: "Sourcing", invest: "Investment", legal: "Legal/Tax",
-                sec_career: "Jobs & Growth", jobs: "Find Jobs", talents: "Hire Talents", visa: "Visa/PRO", setup: "Setup", banking: "Banking", wiki: "UAE Wiki",
-                sec_tech: "Tech & Web3", otc: "OTC Map", web3: "Web3 Ops", ai: "AI/Compute"
-            }
+            zh: { sec_living: "生活与房产", property: "房产租售", motors: "二手汽车", market: "闲置市场", factory: "工厂直供" },
+            en: { sec_living: "Living", property: "Property", motors: "Motors", market: "Market", factory: "Factory Direct" }
         };
 
-        // ==========================================
-        // 2. 基础功能：语言切换、语音、跑马灯
-        // ==========================================
+        // 切换语言
         function changeLang(lang) {
             document.documentElement.dir = (lang === 'ar' || lang === 'fa' || lang === 'ur') ? 'rtl' : 'ltr';
             const data = langData[lang] || langData['en'];
@@ -176,107 +164,93 @@
                 const key = el.getAttribute('data-key');
                 if (data[key]) el.innerText = data[key];
             });
-            const searchInput = document.getElementById('searchInput');
-            if(searchInput) searchInput.placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
+            const sInput = document.getElementById('searchInput');
+            if(sInput) sInput.placeholder = (lang === 'zh') ? "用母语搜索..." : "Search factory, jobs...";
         }
 
+        // 语音搜索
         function toggleSearchVoice() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return alert("Browser not supported");
-            
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) return alert("Browser not supported");
             const mic = document.getElementById('searchMic');
             const input = document.getElementById('searchInput');
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'zh-CN'; 
-            
-            recognition.onstart = () => { if(mic) mic.classList.add('mic-active'); if(input) input.placeholder = "Listening..."; };
-            recognition.onend = () => { if(mic) mic.classList.remove('mic-active'); if(input) input.placeholder = "Search..."; };
-            recognition.onresult = (e) => { if(input) input.value = e.results[0][0].transcript; };
-            recognition.start();
+            const rec = new SR();
+            rec.lang = 'zh-CN';
+            rec.onstart = () => { if(mic) mic.classList.add('mic-active'); if(input) input.placeholder = "Listening..."; };
+            rec.onend = () => { if(mic) mic.classList.remove('mic-active'); if(input) input.placeholder = "Search..."; };
+            rec.onresult = (e) => { if(input) input.value = e.results[0][0].transcript; };
+            rec.start();
         }
 
-        const tickerWords = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67", "🏗️ BIZ: New Licenses"];
-        let wordIdx = 0;
+        // 动态文字跳动
+        const tickerWords = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67"];
+        let wIdx = 0;
         setInterval(() => {
             const el = document.getElementById('business-ticker');
-            if (el) {
-                wordIdx = (wordIdx + 1) % tickerWords.length;
-                el.innerText = tickerWords[wordIdx];
-            }
+            if (el) { wIdx = (wIdx + 1) % tickerWords.length; el.innerText = tickerWords[wIdx]; }
         }, 3000);
 
+        // 自动语言检测
         function autoDetectLanguage() {
-            const userLang = navigator.language || navigator.userLanguage; 
-            const langCode = userLang.split('-')[0].toLowerCase(); 
-            const langSwitcher = document.getElementById('langSwitcher');
-            if (langCode !== 'en' && langSwitcher && langSwitcher.querySelector(`option[value="${langCode}"]`)) {
-                 langSwitcher.value = langCode;
-                 changeLang(langCode);
+            const userLang = (navigator.language || navigator.userLanguage).split('-')[0].toLowerCase();
+            const switcher = document.getElementById('langSwitcher');
+            if (userLang !== 'en' && switcher && switcher.querySelector(`option[value="${userLang}"]`)) {
+                 switcher.value = userLang;
+                 changeLang(userLang);
             }
         }
 
-        // ==========================================
-        // 3. 核心修复逻辑：帖子独立分层
-        // ==========================================
+        // ✅ 核心逻辑：加载瀑布流帖子到最底部
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
 
-        async function loadPosts() {
+        async function loadWaterfallPosts() {
             if (typeof supabase === 'undefined') return;
             const client = supabase.createClient(SB_URL, SB_KEY);
             
-            // 获取最新 4 条帖子
+            // 抓取最新的 10 条数据
             const { data, error } = await client
                 .from('posts')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(4);
+                .limit(10);
 
-            if (error || !data || data.length === 0) return;
+            const feedContainer = document.getElementById('waterfall-feed');
+            if (!feedContainer) return;
 
-            // 1. 找到 "Business & Trade" 的标题栏
-            const businessHeader = document.querySelector('[data-key="sec_business"]');
-            if (!businessHeader) return;
-            
-            // 2. 找到标题栏的父级 (那个 flex row)
-            const titleRow = businessHeader.parentElement;
+            if (error || !data || data.length === 0) {
+                feedContainer.innerHTML = '<div class="text-center text-xs text-slate-300 col-span-2">No posts yet.</div>';
+                return;
+            }
 
-            // 3. 创建一个新的容器，专门放帖子 (横向排列)
-            // 样式说明：grid-cols-2 表示一行两个，不干扰下面的图标
-            const newPostsContainer = document.createElement('div');
-            newPostsContainer.className = "grid grid-cols-2 gap-3 mb-4"; 
-
-            // 4. 生成帖子卡片
+            // 生成瀑布流卡片 (图片在上，文字在下，大图模式)
             const cardsHTML = data.map(post => {
                 const imgUrl = post.image_url || 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=800&q=80';
                 return `
-                <div onclick="window.location.href='details.html?id=${post.id}'" class="bg-white p-3 rounded-2xl shadow-sm border border-amber-100 flex gap-3 h-24 active:scale-95 transition-transform cursor-pointer overflow-hidden relative">
-                    <div class="w-20 h-full bg-slate-100 rounded-xl overflow-hidden shrink-0">
-                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                <div onclick="window.location.href='details.html?id=${post.id}'" class="feed-card active:scale-[0.98] transition-transform cursor-pointer">
+                    <div class="relative">
+                        <img src="${imgUrl}">
+                        <span class="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">
+                            ${post.category || 'General'}
+                        </span>
                     </div>
-                    <div class="flex-1 flex flex-col justify-between py-1">
-                        <div>
-                            <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md mb-1 inline-block line-clamp-1">${post.category || 'New'}</span>
-                            <h3 class="text-xs font-bold text-slate-800 leading-tight line-clamp-2">${post.title || 'Untitled Post'}</h3>
-                        </div>
-                        <div class="flex justify-between items-end">
-                            <span class="text-[9px] text-slate-400">刚刚</span>
-                            <span class="text-[9px] font-extrabold text-amber-600">CHECK ></span>
+                    <div class="p-3">
+                        <h3 class="text-xs font-bold text-slate-900 leading-snug line-clamp-2 mb-2">${post.title || 'Untitled'}</h3>
+                        <div class="flex justify-between items-center border-t border-slate-100 pt-2">
+                            <span class="text-xs font-black text-emerald-600">AED Check</span>
+                            <span class="text-[9px] text-slate-400">Just now</span>
                         </div>
                     </div>
                 </div>
                 `;
             }).join('');
 
-            newPostsContainer.innerHTML = cardsHTML;
-
-            // 5. 关键一步：把这个新容器插在“标题”和“旧图标网格”之间
-            titleRow.parentNode.insertBefore(newPostsContainer, titleRow.nextSibling);
+            feedContainer.innerHTML = cardsHTML;
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             autoDetectLanguage();
-            loadPosts();
+            loadWaterfallPosts();
         });
     </script>
 </body>
