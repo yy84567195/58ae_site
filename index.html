@@ -130,8 +130,8 @@
                 <h3 class="text-base font-black text-slate-900">Fresh Recommendations</h3>
             </div>
             
-            <div id="waterfall-feed" class="columns-2 gap-3 space-y-3">
-                <div class="text-center text-xs text-slate-400 py-10 w-full col-span-2">Loading latest posts...</div>
+            <div id="waterfall-feed" class="columns-2 md:columns-3 lg:columns-5 gap-3 space-y-3">
+                <div class="text-center text-xs text-slate-400 py-10 w-full break-inside-avoid">Loading latest posts...</div>
             </div>
         </section>
 
@@ -200,7 +200,7 @@
             }
         }
 
-        // ✅ 核心逻辑：加载瀑布流帖子到最底部
+        // ✅ 核心逻辑：加载瀑布流帖子 (智能布局)
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
 
@@ -208,22 +208,22 @@
             if (typeof supabase === 'undefined') return;
             const client = supabase.createClient(SB_URL, SB_KEY);
             
-            // 抓取最新的 10 条数据
+            // 抓取最新的 12 条数据
             const { data, error } = await client
                 .from('posts')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(10);
+                .limit(12);
 
             const feedContainer = document.getElementById('waterfall-feed');
             if (!feedContainer) return;
 
             if (error || !data || data.length === 0) {
-                feedContainer.innerHTML = '<div class="text-center text-xs text-slate-300 col-span-2">No posts yet.</div>';
+                feedContainer.innerHTML = '<div class="text-center text-xs text-slate-300 w-full">No posts yet.</div>';
                 return;
             }
 
-            // 生成瀑布流卡片 (图片在上，文字在下，大图模式)
+            // 生成卡片
             const cardsHTML = data.map(post => {
                 const imgUrl = post.image_url || 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=800&q=80';
                 return `
