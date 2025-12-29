@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat | 58.ae</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* 消息气泡动画 */
+        .msg-enter { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 翻译微光特效 */
+        .trans-highlight { background: linear-gradient(90deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1)); border-left: 3px solid #3b82f6; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden bg-slate-100">
+
+    <header class="bg-white/90 backdrop-blur-md border-b px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <a href="javascript:history.back()" class="w-8 h-8 flex items-center justify-center text-slate-500 active:scale-90 transition">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            <div class="relative">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80" class="w-10 h-10 rounded-full object-cover border border-slate-200">
+                <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+            </div>
+            <div>
+                <h1 class="text-sm font-black text-slate-900 leading-tight">Ahmed (Seller)</h1>
+                <p class="text-[10px] font-bold text-blue-600 flex items-center gap-1">
+                    <i class="fa-solid fa-bolt"></i> AI Translating to English
+                </p>
+            </div>
+        </div>
+        <button class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-phone"></i></button>
+    </header>
+
+    <main id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-6 pb-24">
+        
+        <div class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest my-4">Today 10:23 AM</div>
+
+        <div class="flex flex-col items-start gap-1 max-w-[85%] msg-enter">
+            <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-slate-800 text-sm">
+                مرحبا، هل السيارة لا تزال متاحة؟
+            </div>
+            <div class="trans-highlight px-3 py-2 rounded-xl rounded-tl-none text-xs text-slate-600 font-medium flex items-start gap-2 w-full mt-[-4px]">
+                <i class="fa-solid fa-language text-blue-500 mt-0.5"></i>
+                <div>
+                    <span class="font-bold text-blue-600 text-[10px] uppercase block mb-0.5">AI Translated:</span>
+                    Hello, is the car still available?
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-end gap-1 max-w-[85%] self-end msg-enter">
+            <div class="bg-slate-900 text-white p-3 rounded-2xl rounded-tr-none shadow-md text-sm">
+                Yes, it is available. When would you like to see it?
+            </div>
+            <span class="text-[9px] text-slate-400 font-bold mr-1">Read 10:25 AM</span>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t p-3 pb-safe fixed bottom-0 w-full z-50">
+        <div class="flex items-end gap-2">
+            <button class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-blue-600 bg-slate-50 rounded-full active:scale-95 transition">
+                <i class="fa-solid fa-camera"></i>
+            </button>
+            
+            <div class="flex-1 bg-slate-100 rounded-2xl flex items-center px-3 py-2 gap-2">
+                <input type="text" id="msgInput" placeholder="Type or say something..." class="bg-transparent flex-1 text-sm font-medium outline-none text-slate-900 placeholder:text-slate-400">
+                <i id="voiceMic" onclick="toggleVoice()" class="fa-solid fa-microphone text-slate-400 active:text-red-500 cursor-pointer transition-colors"></i>
+            </div>
+
+            <button onclick="sendMessage()" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-200 active:scale-90 transition">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        // 自动滚动到底部
+        const chatBox = document.getElementById('chat-box');
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // 发送消息逻辑 (模拟)
+        function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 1. 显示我的消息
+            const myMsgHTML = `
+                <div class="flex flex-col items-end gap-1 max-w-[85%] self-end msg-enter mt-4">
+                    <div class="bg-slate-900 text-white p-3 rounded-2xl rounded-tr-none shadow-md text-sm">
+                        ${text}
+                    </div>
+                    <span class="text-[9px] text-slate-400 font-bold mr-1">Just now</span>
+                </div>
+            `;
+            chatBox.insertAdjacentHTML('beforeend', myMsgHTML);
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 2. 模拟对方回复 (AI 翻译效果)
+            setTimeout(() => {
+                showTypingIndicator();
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    receiveMockReply();
+                }, 2000);
+            }, 500);
+        }
+
+        // 模拟对方“正在输入...”
+        function showTypingIndicator() {
+            const typingHTML = `
+                <div id="typing-indicator" class="flex items-center gap-1 ml-2 mb-4 bg-slate-200 w-fit px-3 py-2 rounded-full">
+                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-75"></div>
+                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-150"></div>
+                </div>
+            `;
+            chatBox.insertAdjacentHTML('beforeend', typingHTML);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        // 接收模拟回复
+        function receiveMockReply() {
+            const replyHTML = `
+                <div class="flex flex-col items-start gap-1 max-w-[85%] msg-enter">
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-slate-800 text-sm">
+                        ممتاز، سأتصل بك لاحقاً.
+                    </div>
+                    <div class="trans-highlight px-3 py-2 rounded-xl rounded-tl-none text-xs text-slate-600 font-medium flex items-start gap-2 w-full mt-[-4px]">
+                        <i class="fa-solid fa-language text-blue-500 mt-0.5"></i>
+                        <div>
+                            <span class="font-bold text-blue-600 text-[10px] uppercase block mb-0.5">AI Translated:</span>
+                            Great, I will call you later.
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatBox.insertAdjacentHTML('beforeend', replyHTML);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // 语音输入 (和首页一样的逻辑)
+        function toggleVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return alert("Not supported");
+            
+            const mic = document.getElementById('voiceMic');
+            const input = document.getElementById('msgInput');
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US'; // 也可以设为中文
+            
+            recognition.onstart = () => { mic.classList.replace('text-slate-400', 'text-red-500'); input.placeholder = "Listening..."; };
+            recognition.onend = () => { mic.classList.replace('text-red-500', 'text-slate-400'); input.placeholder = "Type something..."; };
+            recognition.onresult = (e) => { input.value = e.results[0][0].transcript; };
+            recognition.start();
+        }
+    </script>
+</body>
+</html>

@@ -199,7 +199,8 @@
         }
 
         function startChat() {
-             alert("Next step: Open in-app AI Chat!");
+            // 跳转到聊天页，带上卖家的名字或 ID (这里暂时模拟)
+            window.location.href = 'chat.html?seller=Ahmed&id=' + postId;
         }
 
         window.onload = loadDetails;
