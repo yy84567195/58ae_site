@@ -146,9 +146,158 @@
         <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-user text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">My 58</span></div>
     </footer>
 
-   <script>
+  <!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>58.ae | The UAE Multilingual Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; touch-action: manipulation; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .nav-card { transition: transform 0.1s; border-radius: 1.25rem; background: white; border: 1px solid #e2e8f0; }
+        .nav-card:active { transform: scale(0.95); background: #f8fafc; }
+        .icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 1.2rem; }
+        .badge-ai { background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 800; }
+        
+        /* 语音搜索特效 */
+        .mic-active { color: #ef4444 !important; animation: micPulse 1s infinite; }
+        @keyframes micPulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        #business-ticker { transition: all 0.5s ease; }
+    </style>
+</head>
+<body class="pb-20">
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-black italic tracking-tighter text-slate-900">58<span class="text-blue-600">.ae</span></span>
+            <div class="badge-ai animate-pulse">AI ACTIVE</div>
+        </div>
+        <div class="flex items-center gap-3">
+            <select id="langSwitcher" onchange="changeLang(this.value)" class="text-xs font-bold bg-slate-100 border-none rounded-full px-3 py-2 outline-none">
+                <option value="en">ENGLISH</option>
+                <option value="zh">中文 (CHINESE)</option>
+                <option value="ar">العربية (ARABIC)</option>
+                <option value="ru">РУССКИЙ (RUSSIAN)</option>
+                <option value="hi">हिन्दी (HINDI)</option>
+                <option value="ur">اردو (URDU)</option>
+                <option value="tl">TAGALOG (FILIPINO)</option>
+                <option value="fr">FRANÇAIS</option>
+                <option value="fa">فارسی</option>
+                <option value="bn">বাংলা</option>
+                <option value="ml">മലയാളം</option>
+                <option value="de">DEUTSCH</option>
+                <option value="es">ESPAÑOL</option>
+            </select>
+        </div>
+    </nav>
+
+    <header class="bg-white px-4 pt-6 pb-4">
+        <div class="relative group mb-4">
+            <input type="text" id="searchInput" placeholder="Search factory, jobs, home in your language..." 
+                class="w-full bg-slate-100 border-none rounded-2xl py-4 pl-12 pr-12 text-sm font-medium outline-none focus:ring-2 ring-blue-500 transition-all">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <i id="searchMic" onclick="toggleSearchVoice()" class="fa-solid fa-microphone absolute right-4 top-1/2 -translate-y-1/2 text-blue-500 cursor-pointer p-2"></i>
+        </div>
+        
+        <div class="flex gap-6 overflow-x-auto no-scrollbar whitespace-nowrap text-[10px] font-bold text-slate-500 uppercase">
+            <span class="flex items-center gap-1"><i class="fa-solid fa-gas-pump text-orange-400"></i> FUEL: AED 3.12</span>
+            <span class="flex items-center gap-1"><i class="fa-solid fa-money-bill-transfer text-emerald-500"></i> USD/AED: 3.6725</span>
+            <span class="flex items-center gap-1"><i class="fa-brands fa-bitcoin text-orange-500"></i> BTC: $96.5K</span>
+            <span class="flex items-center gap-1"><i class="fa-solid fa-users text-blue-500"></i> 1.2k Online</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-4 space-y-8">
+
+        <section>
+            <div class="flex justify-between items-end mb-4 px-1">
+                <h2 class="text-sm font-black text-blue-600 uppercase tracking-widest" data-key="sec_living">Living</h2>
+                <span class="text-[10px] font-bold text-slate-400">EVERYDAY NEEDS</span>
+            </div>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-building"></i></div><span class="text-[10px] font-bold" data-key="property">Property</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-car"></i></div><span class="text-[10px] font-bold" data-key="motors">Motors</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-tags"></i></div><span class="text-[10px] font-bold" data-key="market">Market</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-broom"></i></div><span class="text-[10px] font-bold" data-key="services">Services</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-truck-fast"></i></div><span class="text-[10px] font-bold" data-key="logistics">Logistics</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-blue-50 text-blue-600"><i class="fa-solid fa-hospital"></i></div><span class="text-[10px] font-bold" data-key="health">Health</span></div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex justify-between items-end mb-4 px-1">
+                <h2 class="text-sm font-black text-amber-600 uppercase tracking-widest" data-key="sec_business">Business & Trade</h2>
+                <div class="flex flex-col items-end">
+                    <span id="business-ticker" class="text-[9px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full block text-right mb-1 w-fit ml-auto">🔥 HOT: Factory Deals</span>
+                    <span class="text-[10px] font-bold text-slate-400 block text-right">GROW YOUR WEALTH</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <div onclick="window.location.href='list.html'" class="nav-card p-4 border-amber-200 ring-2 ring-amber-50 shadow-lg cursor-pointer">
+                    <div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-industry"></i></div>
+                    <span class="text-[10px] font-bold" data-key="factory">Factory Direct</span>
+                </div>
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-handshake"></i></div><span class="text-[10px] font-bold" data-key="broker">Opportunities</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-shop"></i></div><span class="text-[10px] font-bold" data-key="micro">Micro Biz</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-boxes-stacked"></i></div><span class="text-[10px] font-bold" data-key="sourcing">Sourcing</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-briefcase"></i></div><span class="text-[10px] font-bold" data-key="invest">Investment</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-amber-50 text-amber-600"><i class="fa-solid fa-gavel"></i></div><span class="text-[10px] font-bold" data-key="legal">Legal/Tax</span></div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex justify-between items-end mb-4 px-1">
+                <h2 class="text-sm font-black text-emerald-600 uppercase tracking-widest" data-key="sec_career">Jobs & Growth</h2>
+                <span class="text-[10px] font-bold text-slate-400">YOUR NEXT STEP</span>
+            </div>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <div class="nav-card p-4 ring-2 ring-emerald-50"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-user-tie"></i></div><span class="text-[10px] font-bold" data-key="jobs">Find Jobs</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-users-viewfinder"></i></div><span class="text-[10px] font-bold" data-key="talents">Hire Talents</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-passport"></i></div><span class="text-[10px] font-bold" data-key="visa">Visa/PRO</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-file-contract"></i></div><span class="text-[10px] font-bold" data-key="setup">Company Setup</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-building-columns"></i></div><span class="text-[10px] font-bold" data-key="banking">Banking</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-emerald-50 text-emerald-600"><i class="fa-solid fa-book"></i></div><span class="text-[10px] font-bold" data-key="wiki">UAE Wiki</span></div>
+            </div>
+        </section>
+
+        <section class="pb-8">
+            <div class="flex justify-between items-end mb-4 px-1">
+                <h2 class="text-sm font-black text-purple-600 uppercase tracking-widest" data-key="sec_tech">Tech & Web3</h2>
+                <span class="text-[10px] font-bold text-slate-400">FUTURE READY</span>
+            </div>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-solid fa-map-location-dot"></i></div><span class="text-[10px] font-bold" data-key="otc">OTC Map</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-brands fa-ethereum"></i></div><span class="text-[10px] font-bold" data-key="web3">Web3 Ops</span></div>
+                <div class="nav-card p-4"><div class="icon-box bg-purple-50 text-purple-600"><i class="fa-solid fa-microchip"></i></div><span class="text-[10px] font-bold" data-key="ai">AI/Compute</span></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t px-6 py-2 flex justify-between items-center max-w-6xl mx-auto shadow-2xl">
+        <div class="flex flex-col items-center text-blue-600"><i class="fa-solid fa-house text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Home</span></div>
+        <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-message text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Chat</span></div>
+        <div class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl">
+            <div onclick="window.location.href='post.html'" class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center -mt-10 border-4 border-white shadow-xl cursor-pointer">
+                <i class="fa-solid fa-plus text-xl"></i>
+            </div>
+        </div>
+        <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-compass text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">Explore</span></div>
+        <div class="flex flex-col items-center text-slate-400"><i class="fa-solid fa-user text-lg"></i><span class="text-[8px] mt-1 font-extrabold uppercase">My 58</span></div>
+    </footer>
+
+    <script>
         // ==========================================
-        // 1. 语言包数据
+        // 1. 语言包 (13种语言支持)
         // ==========================================
         const langData = {
             zh: {
@@ -166,7 +315,7 @@
         };
 
         // ==========================================
-        // 2. 基础功能
+        // 2. 基础功能：语言切换、语音、跑马灯
         // ==========================================
         function changeLang(lang) {
             document.documentElement.dir = (lang === 'ar' || lang === 'fa' || lang === 'ur') ? 'rtl' : 'ltr';
@@ -215,7 +364,7 @@
         }
 
         // ==========================================
-        // 3. 核心修复：把帖子放在独立的区域，不挤占图标
+        // 3. 核心修复逻辑：帖子独立分层
         // ==========================================
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
@@ -270,7 +419,6 @@
             newPostsContainer.innerHTML = cardsHTML;
 
             // 5. 关键一步：把这个新容器插在“标题”和“旧图标网格”之间
-            // insertAfter 逻辑：在 titleRow 后面插入 newPostsContainer
             titleRow.parentNode.insertBefore(newPostsContainer, titleRow.nextSibling);
         }
 
@@ -279,5 +427,7 @@
             loadPosts();
         });
     </script>
+</body>
+</html>
 </body>
 </html>
