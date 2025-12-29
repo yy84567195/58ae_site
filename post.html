@@ -7,262 +7,257 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; touch-action: manipulation; }
         
-        .click-pulse { animation: pulse-blue 0.5s; }
-        @keyframes pulse-blue { 
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 
-            70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(37, 99, 235, 0); } 
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } 
-        }
-
+        /* 动画特效 */
         .listening-animation { animation: pulse-red 1.5s infinite; background-color: #fee2e2 !important; border-color: #ef4444 !important; }
-        .listening-icon { color: #ef4444 !important; }
-        @keyframes pulse-red { 
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
-            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
-        }
-
-        .ai-thinking {
-            background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
+        .ai-thinking { background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
         .upload-dashed { border: 2px dashed #e2e8f0; }
+        
+        /* 魔法按钮特效 */
+        .magic-btn-active { animation: magicPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes magicPop { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
-<body class="pb-10">
+<body class="pb-10 h-screen flex flex-col">
 
-    <nav class="sticky top-0 z-50 bg-white border-b px-4 py-4 flex items-center">
-        <a href="index.html" class="text-slate-900 mr-4"><i class="fa-solid fa-xmark text-xl"></i></a>
-        <h1 class="text-lg font-extrabold text-slate-900">Create New Ad</h1>
+    <nav class="sticky top-0 z-50 bg-white border-b px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="index.html" class="text-slate-900 mr-4 w-8 h-8 flex items-center justify-center active:bg-slate-100 rounded-full transition"><i class="fa-solid fa-xmark text-xl"></i></a>
+            <h1 class="text-lg font-extrabold text-slate-900">New Ad</h1>
+        </div>
+        <button onclick="handlePublish()" id="headerPubBtn" class="text-blue-600 font-bold text-sm disabled:opacity-50">Publish</button>
     </nav>
 
-    <main class="max-w-xl mx-auto p-4 space-y-8">
+    <main class="flex-1 p-4 space-y-6 overflow-y-auto">
 
         <section>
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 1: Photos</h2>
-            <div class="grid grid-cols-3 gap-2">
-                <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
-                <div onclick="document.getElementById('hiddenFileInput').click()" id="uploadBox"
-                     class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden relative active:bg-slate-100">
-                    <div id="uploadIcon" class="flex flex-col items-center">
+            <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">1. Media (Photo & Video)</h2>
+            <div class="grid grid-cols-3 gap-3">
+                
+                <input type="file" id="imgInput" accept="image/*" style="display: none;" onchange="previewMedia(event, 'img')">
+                <div onclick="document.getElementById('imgInput').click()" id="uploadImgBox"
+                     class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden relative active:scale-95 duration-200">
+                    <div id="imgIcon" class="flex flex-col items-center">
                         <i class="fa-solid fa-camera text-slate-400 text-xl mb-1"></i>
-                        <span class="text-[10px] font-bold text-slate-400">ADD</span>
+                        <span class="text-[10px] font-bold text-slate-400">PHOTO</span>
                     </div>
-                    <img id="imagePreview" class="hidden w-full h-full object-cover absolute top-0 left-0">
+                    <img id="imgPreview" class="hidden w-full h-full object-cover absolute top-0 left-0">
+                    <div id="removeImgBtn" onclick="removeMedia(event, 'img')" class="hidden absolute top-1 right-1 bg-black/50 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs z-10">✕</div>
                 </div>
+
+                <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="previewMedia(event, 'video')">
+                <div onclick="document.getElementById('videoInput').click()" id="uploadVideoBox"
+                     class="upload-dashed aspect-square rounded-2xl flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors overflow-hidden relative active:scale-95 duration-200">
+                    <div id="videoIcon" class="flex flex-col items-center">
+                        <i class="fa-solid fa-video text-slate-400 text-xl mb-1"></i>
+                        <span class="text-[10px] font-bold text-slate-400">VIDEO</span>
+                    </div>
+                    <video id="videoPreview" class="hidden w-full h-full object-cover absolute top-0 left-0" autoplay muted loop playsinline></video>
+                    <div id="removeVideoBtn" onclick="removeMedia(event, 'video')" class="hidden absolute top-1 right-1 bg-black/50 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs z-10">✕</div>
+                </div>
+
             </div>
         </section>
 
         <section class="space-y-4">
-            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-tight">Step 2: Describe</h2>
+            <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">2. Details</h2>
             
-            <div id="recordBtn" onclick="toggleVoice()" class="flex flex-col items-center justify-center py-6 bg-blue-50 rounded-[2.5rem] border border-blue-100 relative cursor-pointer transition-all select-none">
-                <div id="innerCircle" class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 transition-transform duration-100">
-                    <i id="micIcon" class="fa-solid fa-microphone text-white text-3xl transition-colors"></i>
-                </div>
-                <p id="recordStatus" class="mt-4 text-sm font-bold text-blue-600 animate-bounce">Tap to Speak</p>
-                <p class="text-[10px] text-blue-400 px-8 text-center mt-1">AI Auto-Translate & Categorize</p>
+            <div class="relative group">
+                <textarea id="adContent" oninput="simulateAIAnalysis()" placeholder="Type details here... (e.g., selling car, good condition)" 
+                    class="w-full h-40 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none transition-all"></textarea>
+                
+                <button onclick="polishContent()" id="magicBtn" class="absolute bottom-3 right-3 bg-white border border-slate-200 shadow-sm text-xs font-bold text-slate-600 px-3 py-1.5 rounded-full flex items-center gap-1 active:scale-90 transition hover:text-blue-600 hover:border-blue-300">
+                    <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> AI Polish
+                </button>
             </div>
-
-            <div class="text-center text-slate-300 text-xs font-bold uppercase tracking-widest">OR TYPE</div>
-
-            <textarea id="adContent" oninput="simulateAIAnalysis()" placeholder="Say something or type here..." 
-                class="w-full h-32 p-4 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 ring-blue-500 outline-none resize-none transition-all"></textarea>
+            
+            <input type="text" id="adTitle" placeholder="Add a short title..." class="w-full p-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 ring-blue-500 outline-none">
         </section>
 
         <section id="aiCard" class="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm transition-all">
             <div class="flex items-center gap-2 mb-3">
-                <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
-                <h2 class="text-xs font-extrabold uppercase text-slate-900">AI Analysis</h2>
+                <i class="fa-solid fa-robot text-blue-600"></i>
+                <h2 class="text-xs font-extrabold uppercase text-slate-900">AI Assistant</h2>
             </div>
             <div class="space-y-2">
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-400">Detected Category:</span>
-                    <span id="aiCategory" class="font-bold text-blue-600">Waiting for input...</span>
+                <div class="flex justify-between text-xs items-center">
+                    <span class="text-slate-400">Category:</span>
+                    <span id="aiCategory" class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">General</span>
                 </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-400">Suggested Price:</span>
-                    <span id="aiPrice" class="font-bold text-slate-900">--</span>
+                <div class="flex justify-between text-xs items-center">
+                    <span class="text-slate-400">Est. Price:</span>
+                    <input type="number" id="manualPrice" placeholder="0" class="w-20 text-right font-bold text-slate-900 bg-transparent outline-none border-b border-slate-200 focus:border-blue-500">
                 </div>
             </div>
         </section>
 
-        <div class="pt-4">
-            <button onclick="handlePublish()" class="w-full bg-[#25D366] text-white py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all">
-                <i class="fa-brands fa-whatsapp text-2xl"></i>
-                <span id="btnText" class="font-extrabold text-lg">Post via WhatsApp</span>
+        <div class="pt-4 pb-8">
+            <button onclick="handlePublish()" id="mainPubBtn" class="w-full bg-slate-900 text-white py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all">
+                <span class="font-extrabold text-lg">Post Now</span>
+                <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
 
     </main>
 
     <script>
-        // --- 数据库配置 (Key 已填好) ---
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L'; 
-
         const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-        function previewImage(event) {
+        let selectedImg = null;
+        let selectedVideo = null;
+
+        // --- 1. 媒体处理 (图片 & 视频) ---
+        function previewMedia(event, type) {
             const file = event.target.files[0];
-            if (file) {
-                const src = URL.createObjectURL(file);
-                document.getElementById('uploadIcon').classList.add('hidden');
-                const img = document.getElementById('imagePreview');
-                img.src = src;
-                img.classList.remove('hidden');
+            if (!file) return;
+
+            const src = URL.createObjectURL(file);
+            
+            if (type === 'img') {
+                selectedImg = file;
+                document.getElementById('imgIcon').classList.add('hidden');
+                document.getElementById('imgPreview').src = src;
+                document.getElementById('imgPreview').classList.remove('hidden');
+                document.getElementById('removeImgBtn').classList.remove('hidden');
+            } else {
+                // 视频文件大小检查 (限制 50MB)
+                if (file.size > 50 * 1024 * 1024) return alert("Video too large! Max 50MB.");
+                selectedVideo = file;
+                document.getElementById('videoIcon').classList.add('hidden');
+                document.getElementById('videoPreview').src = src;
+                document.getElementById('videoPreview').classList.remove('hidden');
+                document.getElementById('removeVideoBtn').classList.remove('hidden');
             }
         }
 
-        // --- 伪 AI 分析 (实时) ---
+        function removeMedia(e, type) {
+            e.stopPropagation();
+            if (type === 'img') {
+                selectedImg = null;
+                document.getElementById('imgInput').value = "";
+                document.getElementById('imgPreview').classList.add('hidden');
+                document.getElementById('imgIcon').classList.remove('hidden');
+                document.getElementById('removeImgBtn').classList.add('hidden');
+            } else {
+                selectedVideo = null;
+                document.getElementById('videoInput').value = "";
+                document.getElementById('videoPreview').classList.add('hidden');
+                document.getElementById('videoIcon').classList.remove('hidden');
+                document.getElementById('removeVideoBtn').classList.add('hidden');
+            }
+        }
+
+        // --- 2. ✨ AI 润色 (核心升级) ---
+        function polishContent() {
+            const textarea = document.getElementById('adContent');
+            const btn = document.getElementById('magicBtn');
+            const originalText = textarea.value.trim();
+            const category = document.getElementById('aiCategory').innerText;
+
+            if (!originalText) return alert("Please type a few words first!");
+
+            // 按钮动画
+            btn.classList.add('magic-btn-active');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-purple-500"></i> Polishing...`;
+            
+            // 模拟 AI 思考延迟
+            setTimeout(() => {
+                let polishedText = "";
+
+                // 简单的本地 AI 模板逻辑 (模拟 GPT)
+                if (category === 'Motors') {
+                    polishedText = `🔥 FOR SALE: Amazing Opportunity!\n\n${originalText}\n\n✅ GCC Specs & Accident Free\n✅ Low Mileage, Excellent Condition\n✅ Well Maintained, Lady Driven\n\nMust see to appreciate! Contact now for a quick deal.`;
+                } else if (category === 'Property') {
+                    polishedText = `🏡 PREMIUM LISTING: Don't Miss Out!\n\n${originalText}\n\n✨ Prime Location, Close to Metro\n✨ Spacious Layout & Modern Design\n✨ Ready to Move In\n\nPerfect for families or professionals. Viewing available daily!`;
+                } else if (category === 'Jobs') {
+                    polishedText = `👔 HIRING NOW: Join Our Team!\n\nWe are looking for: ${originalText}\n\n🔹 Competitive Salary & Benefits\n🔹 Growth Opportunities\n🔹 Visa Provided\n\nApply today! Send your CV now.`;
+                } else {
+                    polishedText = `🌟 HOT DEAL: ${originalText}\n\n- High Quality Item\n- Best Price in Market\n- Serious Buyers Only\n\nDM me for more details! First come first serve.`;
+                }
+
+                textarea.value = polishedText;
+                btn.innerHTML = `<i class="fa-solid fa-check text-green-500"></i> Done!`;
+                btn.classList.remove('magic-btn-active');
+                
+                // 3秒后恢复按钮
+                setTimeout(() => { btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> AI Polish`; }, 3000);
+            }, 1000);
+        }
+
+        // --- 3. 伪 AI 分析分类 ---
         let aiTimeout;
         function simulateAIAnalysis() {
             const text = document.getElementById('adContent').value.toLowerCase();
             const aiCard = document.getElementById('aiCard');
             const catEl = document.getElementById('aiCategory');
-            const priceEl = document.getElementById('aiPrice');
-
+            
             aiCard.classList.add('ai-thinking');
             catEl.innerText = "Analyzing...";
-            priceEl.innerText = "...";
 
             clearTimeout(aiTimeout);
 
             aiTimeout = setTimeout(() => {
                 aiCard.classList.remove('ai-thinking');
-                
-                if (text.includes('car') || text.includes('车') || text.includes('bmw')) {
-                    catEl.innerText = "🚗 Vehicles / 二手车";
-                    priceEl.innerText = "Est. AED 20k - 50k";
-                } 
-                else if (text.includes('room') || text.includes('villa') || text.includes('房') || text.includes('租')) {
-                    catEl.innerText = "🏠 Real Estate / 房产";
-                    priceEl.innerText = "Est. AED 2,000 / month";
-                } 
-                else if (text.includes('phone') || text.includes('laptop') || text.includes('手机') || text.includes('电脑')) {
-                    catEl.innerText = "📱 Electronics / 数码";
-                    priceEl.innerText = "Est. AED 1,500";
-                } 
-                else if (text.length > 2) {
-                    catEl.innerText = "📦 General / 综合";
-                    priceEl.innerText = "Pending Review";
-                } else {
-                    catEl.innerText = "Waiting for details...";
-                    priceEl.innerText = "--";
-                }
+                if (text.includes('car') || text.includes('bmw') || text.includes('drive')) catEl.innerText = "Motors";
+                else if (text.includes('room') || text.includes('villa') || text.includes('rent')) catEl.innerText = "Property";
+                else if (text.includes('phone') || text.includes('laptop')) catEl.innerText = "Market";
+                else if (text.includes('job') || text.includes('hiring')) catEl.innerText = "Jobs";
+                else catEl.innerText = "General";
             }, 800);
         }
 
-        // --- 录音逻辑 ---
-        let recognition;
-        let isListening = false;
-        const rBtn = document.getElementById('recordBtn');
-        const innerCircle = document.getElementById('innerCircle');
-        
-        rBtn.addEventListener('mousedown', () => { if(!isListening) innerCircle.classList.add('scale-95'); });
-        rBtn.addEventListener('mouseup', () => { 
-            innerCircle.classList.remove('scale-95'); 
-            if(!isListening) { innerCircle.classList.remove('click-pulse'); void innerCircle.offsetWidth; innerCircle.classList.add('click-pulse'); }
-        });
-
-        function toggleVoice() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Please type directly.");
-                return;
-            }
-
-            const status = document.getElementById('recordStatus');
-            const icon = document.getElementById('micIcon');
-            const textarea = document.getElementById('adContent');
-
-            if (isListening) {
-                recognition.stop();
-                isListening = false;
-                rBtn.classList.remove('listening-animation');
-                icon.classList.remove('listening-icon');
-                status.innerText = "Tap to Speak";
-                status.classList.add('animate-bounce');
-                status.classList.replace('text-red-500', 'text-blue-600');
-            } else {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                recognition = new SpeechRecognition();
-                recognition.lang = 'zh-CN'; 
-                recognition.continuous = false;
-
-                recognition.onstart = function() {
-                    isListening = true;
-                    rBtn.classList.add('listening-animation');
-                    icon.classList.add('listening-icon');
-                    status.classList.remove('animate-bounce');
-                    status.innerText = "Listening...";
-                    status.classList.replace('text-blue-600', 'text-red-500');
-                };
-
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    textarea.value += transcript + " ";
-                    simulateAIAnalysis(); 
-                };
-
-                recognition.onend = function() {
-                    isListening = false;
-                    rBtn.classList.remove('listening-animation');
-                    icon.classList.remove('listening-icon');
-                    status.innerText = "Tap to Speak";
-                    status.classList.add('animate-bounce');
-                    status.classList.replace('text-red-500', 'text-blue-600');
-                };
-
-                recognition.start();
-            }
-        }
-
-        // --- 🚀 发布逻辑 (含 AI 自动补全) ---
+        // --- 4. 发布逻辑 ---
         async function handlePublish() {
-            let content = document.getElementById('adContent').value;
-            const btnLabel = document.getElementById('btnText');
-            const aiCategory = document.getElementById('aiCategory').innerText;
+            const content = document.getElementById('adContent').value.trim();
+            const title = document.getElementById('adTitle').value.trim();
+            const price = document.getElementById('manualPrice').value || "Contact";
+            const category = document.getElementById('aiCategory').innerText;
+            const btn = document.getElementById('mainPubBtn');
             
-            if (!content || content.trim() === "") {
-                alert("Please enter content!");
-                return;
-            }
+            if (!content || !title) return alert("Please enter Title and Details!");
+
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Publishing...`;
+            btn.disabled = true;
 
             try {
-                btnLabel.innerText = "AI Optimizing..."; 
+                // 模拟媒体上传 (真实环境需要 Storage 桶)
+                let finalImageUrl = 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=800&q=80';
                 
-                // ✨ AI 补全逻辑：如果字数太少，自动加引导词
-                if (content.length < 20) {
-                     if (aiCategory.includes('Vehicle') || aiCategory.includes('车')) {
-                        content += "\n\n[AI Info]:\n- GCC Specs\n- Accident Free\n- Contact for details";
-                    } else if (aiCategory.includes('Real Estate') || aiCategory.includes('房')) {
-                        content += "\n\n[AI Info]:\n- Close to Metro\n- Central A/C\n- Ready to move in";
-                    } else if (aiCategory.includes('Electronics') || aiCategory.includes('数码')) {
-                        content += "\n\n[AI Info]:\n- Original Box\n- Battery 90%+\n- No Scratches";
-                    }
-                }
+                // 如果用户选了图片，我们用本地 Blob URL 骗一下视觉 (刷新会丢，但作为演示足够震撼)
+                // 真实逻辑是 await sbClient.storage.from('images').upload...
+                if (category === 'Motors') finalImageUrl = 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80';
+                if (category === 'Property') finalImageUrl = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80';
 
-                // 存入数据库
+                // 写入数据库
                 const { error } = await sbClient.from('posts').insert([{ 
-                    title: content.substring(0, 30), 
-                    description: content, 
-                    category: aiCategory 
+                    title: title, 
+                    description: content + `\n\nPrice: AED ${price}`, 
+                    category: category,
+                    image_url: finalImageUrl,
+                    // 如果你的表没有 video_url 字段，这行可能会报错，所以我暂时注释掉
+                    // video_url: selectedVideo ? 'https://example.com/video.mp4' : null,
+                    created_at: new Date()
                 }]);
 
                 if (error) throw error;
 
-                alert('✅ AI has optimized your ad! Opening WhatsApp...');
-                window.location.href = `https://wa.me/971500000000?text=${encodeURIComponent(content)}`;
+                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+
             } catch (err) {
                 alert('Error: ' + err.message);
-                btnLabel.innerText = "Post via WhatsApp";
+                btn.innerHTML = `Post Now <i class="fa-solid fa-arrow-right"></i>`;
+                btn.disabled = false;
             }
         }
     </script>
