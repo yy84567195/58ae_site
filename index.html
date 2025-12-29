@@ -166,7 +166,7 @@
         };
 
         // ==========================================
-        // 2. 基础功能：切换语言 & 语音 & 跑马灯
+        // 2. 基础功能
         // ==========================================
         function changeLang(lang) {
             document.documentElement.dir = (lang === 'ar' || lang === 'fa' || lang === 'ur') ? 'rtl' : 'ltr';
@@ -176,41 +176,24 @@
                 if (data[key]) el.innerText = data[key];
             });
             const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
-            }
+            if(searchInput) searchInput.placeholder = (lang === 'zh') ? "用母语搜索工厂、工作、房产..." : "Search factory, jobs, home in your language...";
         }
 
         function toggleSearchVoice() {
-            // 兼容性处理
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("Speech recognition not supported in this browser.");
-                return;
-            }
+            if (!SpeechRecognition) return alert("Browser not supported");
             
             const mic = document.getElementById('searchMic');
             const input = document.getElementById('searchInput');
             const recognition = new SpeechRecognition();
-            
-            // 设为中文识别 (也可改为动态)
             recognition.lang = 'zh-CN'; 
             
-            recognition.onstart = () => { 
-                if(mic) mic.classList.add('mic-active'); 
-                if(input) input.placeholder = "Listening... (请说话)"; 
-            };
-            recognition.onend = () => { 
-                if(mic) mic.classList.remove('mic-active'); 
-                if(input) input.placeholder = "Search..."; 
-            };
-            recognition.onresult = (e) => { 
-                if(input) input.value = e.results[0][0].transcript; 
-            };
+            recognition.onstart = () => { if(mic) mic.classList.add('mic-active'); if(input) input.placeholder = "Listening..."; };
+            recognition.onend = () => { if(mic) mic.classList.remove('mic-active'); if(input) input.placeholder = "Search..."; };
+            recognition.onresult = (e) => { if(input) input.value = e.results[0][0].transcript; };
             recognition.start();
         }
 
-        // Business 动态商机提示
         const tickerWords = ["🔥 HOT: Factory Deals", "📈 TRADING: USD 3.67", "🏗️ BIZ: New Licenses"];
         let wordIdx = 0;
         setInterval(() => {
@@ -221,13 +204,9 @@
             }
         }, 3000);
 
-        // ==========================================
-        // 3. 智能环境匹配：自动识别 13 种母语
-        // ==========================================
         function autoDetectLanguage() {
             const userLang = navigator.language || navigator.userLanguage; 
             const langCode = userLang.split('-')[0].toLowerCase(); 
-            
             const langSwitcher = document.getElementById('langSwitcher');
             if (langCode !== 'en' && langSwitcher && langSwitcher.querySelector(`option[value="${langCode}"]`)) {
                  langSwitcher.value = langCode;
@@ -236,64 +215,65 @@
         }
 
         // ==========================================
-        // 4. 核心引擎：数据库读取 + 跳转详情页
+        // 3. 核心修复：把帖子放在独立的区域，不挤占图标
         // ==========================================
         const SB_URL = 'https://kjapiymhfevoansimuay.supabase.co';
         const SB_KEY = 'sb_publishable_C-OMH06nSEgCzRXC9pmjRg_cu-Ntg8L';
 
         async function loadPosts() {
-            // 安全检查：防止头部没加库导致报错
-            if (typeof supabase === 'undefined') {
-                console.warn("Supabase script missing via CDN. Skipping DB load.");
-                return;
-            }
-            
+            if (typeof supabase === 'undefined') return;
             const client = supabase.createClient(SB_URL, SB_KEY);
             
-            // 从数据库拿最新的 6 条帖子
+            // 获取最新 4 条帖子
             const { data, error } = await client
                 .from('posts')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(6);
+                .limit(4);
 
             if (error || !data || data.length === 0) return;
 
-            // 定位到 "Business & Trade" 区域
+            // 1. 找到 "Business & Trade" 的标题栏
             const businessHeader = document.querySelector('[data-key="sec_business"]');
             if (!businessHeader) return;
             
-            const gridContainer = businessHeader.parentElement.nextElementSibling;
-            
-            if (gridContainer) {
-                const cardsHTML = data.map(post => {
-                    const imgUrl = post.image_url || 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=800&q=80';
-                    
-                    // ✅ 点击跳转 details.html 并携带 ID
-                    return `
-                    <div onclick="window.location.href='details.html?id=${post.id}'" class="nav-card p-3 border border-amber-200 shadow-md flex gap-3 h-24 active:scale-95 transition-transform cursor-pointer bg-white overflow-hidden relative group">
-                        <div class="w-20 h-full bg-slate-100 rounded-lg overflow-hidden shrink-0">
-                            <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+            // 2. 找到标题栏的父级 (那个 flex row)
+            const titleRow = businessHeader.parentElement;
+
+            // 3. 创建一个新的容器，专门放帖子 (横向排列)
+            // 样式说明：grid-cols-2 表示一行两个，不干扰下面的图标
+            const newPostsContainer = document.createElement('div');
+            newPostsContainer.className = "grid grid-cols-2 gap-3 mb-4"; 
+
+            // 4. 生成帖子卡片
+            const cardsHTML = data.map(post => {
+                const imgUrl = post.image_url || 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=800&q=80';
+                return `
+                <div onclick="window.location.href='details.html?id=${post.id}'" class="bg-white p-3 rounded-2xl shadow-sm border border-amber-100 flex gap-3 h-24 active:scale-95 transition-transform cursor-pointer overflow-hidden relative">
+                    <div class="w-20 h-full bg-slate-100 rounded-xl overflow-hidden shrink-0">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between py-1">
+                        <div>
+                            <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md mb-1 inline-block line-clamp-1">${post.category || 'New'}</span>
+                            <h3 class="text-xs font-bold text-slate-800 leading-tight line-clamp-2">${post.title || 'Untitled Post'}</h3>
                         </div>
-                        <div class="flex-1 flex flex-col justify-between py-1">
-                            <div>
-                                <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md mb-1 inline-block">${post.category || 'New'}</span>
-                                <h3 class="text-xs font-bold text-slate-800 leading-tight line-clamp-2">${post.title || 'Untitled Post'}</h3>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <span class="text-[9px] font-bold text-slate-400">刚刚发布</span>
-                                <span class="text-[9px] font-extrabold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">CHECK ></span>
-                            </div>
+                        <div class="flex justify-between items-end">
+                            <span class="text-[9px] text-slate-400">刚刚</span>
+                            <span class="text-[9px] font-extrabold text-amber-600">CHECK ></span>
                         </div>
                     </div>
-                    `;
-                }).join('');
+                </div>
+                `;
+            }).join('');
 
-                gridContainer.insertAdjacentHTML('afterbegin', cardsHTML);
-            }
+            newPostsContainer.innerHTML = cardsHTML;
+
+            // 5. 关键一步：把这个新容器插在“标题”和“旧图标网格”之间
+            // insertAfter 逻辑：在 titleRow 后面插入 newPostsContainer
+            titleRow.parentNode.insertBefore(newPostsContainer, titleRow.nextSibling);
         }
 
-        // 统一启动入口
         window.addEventListener('DOMContentLoaded', () => {
             autoDetectLanguage();
             loadPosts();
